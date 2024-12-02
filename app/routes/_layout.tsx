@@ -1,11 +1,4 @@
-import {
-  Form,
-  Link,
-  Outlet,
-  redirect,
-  useLocation,
-  useNavigate,
-} from "react-router";
+import { Form, Link, Outlet, redirect, useNavigation } from "react-router";
 import { getUser } from "~/services/auth";
 import type { Route } from "./+types/_layout";
 
@@ -20,12 +13,8 @@ export async function clientLoader({ request }: Route.LoaderArgs) {
 
 export default function Layout({ loaderData }: Route.ComponentProps) {
   const { user } = loaderData;
-  const navigate = useNavigate();
-  const location = useLocation();
 
-  if (!user && location.pathname !== "/login") {
-    return navigate("/login", { replace: true });
-  }
+  const navigation = useNavigation();
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-800">
@@ -66,6 +55,19 @@ export default function Layout({ loaderData }: Route.ComponentProps) {
           </div>
         </div>
       </nav>
+
+      <div className="relative">
+        <div
+          className={`h-1 bg-blue-500 transition-all duration-300 ease-in-out ${
+            navigation.state === "loading" ? "opacity-100" : "opacity-0"
+          }`}
+          style={{
+            width: navigation.state === "loading" ? "100%" : "0%",
+            position: "absolute",
+            bottom: "-1px",
+          }}
+        />
+      </div>
       <Outlet />
     </div>
   );

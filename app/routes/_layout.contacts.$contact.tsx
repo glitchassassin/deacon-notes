@@ -16,7 +16,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   const { contact, notes, deaconCareGroup } = loaderData;
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-800">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-800 p-4">
       <main className="max-w-4xl mx-auto flex flex-col gap-2">
         <a
           href={`https://app.fluro.io/list/contact/${contact._id}/edit`}
