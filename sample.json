@@ -1,0 +1,479 @@
+[
+    {
+        "_id": "66c682a21741f900366787a7",
+        "realms": [
+            {
+                "_id": "64fa0b7b3758fc0034e4768e",
+                "title": "Fellowship Baptist Church",
+                "bgColor": "#000000",
+                "color": "#ffffff"
+            }
+        ],
+        "data": {
+            "body": "<p>Met him today. Likes Candy. </p>"
+        },
+        "title": "Pastoral Note",
+        "author": {
+            "_id": "6509b5ed6a80990034def598",
+            "name": "Joshua Ferrari"
+        },
+        "managedAuthor": {
+            "_id": "6509b5ee6a80990034def599",
+            "title": "Joshua Ferrari"
+        },
+        "_type": "post",
+        "definition": "note",
+        "created": "2024-08-22T00:13:22.192Z",
+        "fullDefinition": {
+            "definitionName": "note",
+            "title": "Note",
+            "plural": "Notes",
+            "fields": [],
+            "account": "5fc965caf358c17190947143"
+        }
+    },
+    {
+        "_id": "663a312f58fb9a0036bcfbc8",
+        "realms": [
+            {
+                "_id": "64fa0b7b3758fc0034e4768e",
+                "title": "Fellowship Baptist Church",
+                "bgColor": "#000000",
+                "color": "#ffffff"
+            }
+        ],
+        "data": {
+            "when": "2024-05-07T13:48:09.199Z",
+            "comments": "Testing",
+            "connected": "yes",
+            "connectionType": "call"
+        },
+        "title": "Connection",
+        "author": {
+            "_id": "6509b5ed6a80990034def598",
+            "name": "Joshua Ferrari"
+        },
+        "managedAuthor": {
+            "_id": "6509b5ee6a80990034def599",
+            "title": "Joshua Ferrari"
+        },
+        "_type": "post",
+        "definition": "connection",
+        "created": "2024-05-07T13:48:31.202Z",
+        "fullDefinition": {
+            "definitionName": "connection",
+            "title": "Connection",
+            "plural": "Connection",
+            "fields": [
+                {
+                    "defaultValues": [],
+                    "options": [
+                        {
+                            "name": "Call",
+                            "value": "call"
+                        },
+                        {
+                            "name": "Video Call",
+                            "value": "videocall"
+                        },
+                        {
+                            "name": "SMS Message",
+                            "value": "sms"
+                        },
+                        {
+                            "name": "In person",
+                            "value": "inperson"
+                        },
+                        {
+                            "name": "Email",
+                            "value": "email"
+                        }
+                    ],
+                    "allowedValues": [],
+                    "defaultReferences": [],
+                    "allowedReferences": [],
+                    "developerOnly": [],
+                    "minimum": 1,
+                    "askCount": 0,
+                    "maximum": 1,
+                    "fields": [],
+                    "type": "string",
+                    "directive": "select",
+                    "params": {
+                        "allowedTags": []
+                    },
+                    "title": "Connection Type",
+                    "key": "connectionType",
+                    "description": "How did you connect with this contact"
+                },
+                {
+                    "defaultValues": [],
+                    "options": [
+                        {
+                            "name": "Yes",
+                            "value": "yes"
+                        },
+                        {
+                            "name": "No / Not yet",
+                            "value": "no"
+                        }
+                    ],
+                    "allowedValues": [],
+                    "defaultReferences": [],
+                    "allowedReferences": [],
+                    "developerOnly": [],
+                    "minimum": 1,
+                    "askCount": 0,
+                    "maximum": 1,
+                    "fields": [],
+                    "type": "string",
+                    "directive": "button-select",
+                    "title": "Connected",
+                    "key": "connected",
+                    "params": {
+                        "allowedTags": []
+                    },
+                    "expressions": {
+                        "hide": "data.connectionType == 'inperson'"
+                    },
+                    "description": "Did they respond / reply?"
+                },
+                {
+                    "defaultValues": [
+                        "now"
+                    ],
+                    "options": [],
+                    "allowedValues": [],
+                    "defaultReferences": [],
+                    "allowedReferences": [],
+                    "developerOnly": [],
+                    "minimum": 1,
+                    "askCount": 0,
+                    "maximum": 1,
+                    "fields": [],
+                    "type": "date",
+                    "directive": "date-select",
+                    "title": "When did you connect?",
+                    "key": "when",
+                    "errorMessage": "Please select a valid date"
+                },
+                {
+                    "defaultValues": [],
+                    "options": [],
+                    "allowedValues": [],
+                    "defaultReferences": [],
+                    "allowedReferences": [],
+                    "developerOnly": [],
+                    "minimum": 0,
+                    "askCount": 0,
+                    "maximum": 1,
+                    "fields": [],
+                    "type": "string",
+                    "directive": "textarea",
+                    "params": {
+                        "allowedTags": []
+                    },
+                    "title": "Comments",
+                    "key": "comments"
+                }
+            ],
+            "account": "5703199feffc46c51411d98a"
+        }
+    },
+    {
+        "_id": "660c43362dfd75003719bd5c",
+        "realms": [
+            {
+                "_id": "64fa0b7b3758fc0034e4768e",
+                "title": "Fellowship Baptist Church",
+                "bgColor": "#000000",
+                "color": "#ffffff"
+            }
+        ],
+        "data": {
+            "when": "2024-04-02T17:40:44.959Z",
+            "connectionType": "call",
+            "comments": "ljhdfklajshdlkfjsakldfksfhlkjfklshdkjlfelueflkjblk",
+            "connected": "yes"
+        },
+        "title": "Connection",
+        "author": {
+            "_id": "6509de601a83520034ea6c6c",
+            "name": "Curt Smith"
+        },
+        "managedAuthor": {
+            "_id": "6509de611a83520034ea6c6d",
+            "title": "Curt Smith"
+        },
+        "_type": "post",
+        "definition": "connection",
+        "created": "2024-04-02T17:41:10.686Z",
+        "fullDefinition": {
+            "definitionName": "connection",
+            "title": "Connection",
+            "plural": "Connection",
+            "fields": [
+                {
+                    "defaultValues": [],
+                    "options": [
+                        {
+                            "name": "Call",
+                            "value": "call"
+                        },
+                        {
+                            "name": "Video Call",
+                            "value": "videocall"
+                        },
+                        {
+                            "name": "SMS Message",
+                            "value": "sms"
+                        },
+                        {
+                            "name": "In person",
+                            "value": "inperson"
+                        },
+                        {
+                            "name": "Email",
+                            "value": "email"
+                        }
+                    ],
+                    "allowedValues": [],
+                    "defaultReferences": [],
+                    "allowedReferences": [],
+                    "developerOnly": [],
+                    "minimum": 1,
+                    "askCount": 0,
+                    "maximum": 1,
+                    "fields": [],
+                    "type": "string",
+                    "directive": "select",
+                    "params": {
+                        "allowedTags": []
+                    },
+                    "title": "Connection Type",
+                    "key": "connectionType",
+                    "description": "How did you connect with this contact"
+                },
+                {
+                    "defaultValues": [],
+                    "options": [
+                        {
+                            "name": "Yes",
+                            "value": "yes"
+                        },
+                        {
+                            "name": "No / Not yet",
+                            "value": "no"
+                        }
+                    ],
+                    "allowedValues": [],
+                    "defaultReferences": [],
+                    "allowedReferences": [],
+                    "developerOnly": [],
+                    "minimum": 1,
+                    "askCount": 0,
+                    "maximum": 1,
+                    "fields": [],
+                    "type": "string",
+                    "directive": "button-select",
+                    "title": "Connected",
+                    "key": "connected",
+                    "params": {
+                        "allowedTags": []
+                    },
+                    "expressions": {
+                        "hide": "data.connectionType == 'inperson'"
+                    },
+                    "description": "Did they respond / reply?"
+                },
+                {
+                    "defaultValues": [
+                        "now"
+                    ],
+                    "options": [],
+                    "allowedValues": [],
+                    "defaultReferences": [],
+                    "allowedReferences": [],
+                    "developerOnly": [],
+                    "minimum": 1,
+                    "askCount": 0,
+                    "maximum": 1,
+                    "fields": [],
+                    "type": "date",
+                    "directive": "date-select",
+                    "title": "When did you connect?",
+                    "key": "when",
+                    "errorMessage": "Please select a valid date"
+                },
+                {
+                    "defaultValues": [],
+                    "options": [],
+                    "allowedValues": [],
+                    "defaultReferences": [],
+                    "allowedReferences": [],
+                    "developerOnly": [],
+                    "minimum": 0,
+                    "askCount": 0,
+                    "maximum": 1,
+                    "fields": [],
+                    "type": "string",
+                    "directive": "textarea",
+                    "params": {
+                        "allowedTags": []
+                    },
+                    "title": "Comments",
+                    "key": "comments"
+                }
+            ],
+            "account": "5703199feffc46c51411d98a"
+        }
+    },
+    {
+        "_id": "65ea308d9c20210037263da2",
+        "realms": [
+            {
+                "_id": "64fa0b7b3758fc0034e4768e",
+                "title": "Fellowship Baptist Church",
+                "bgColor": "#000000",
+                "color": "#ffffff"
+            }
+        ],
+        "data": {
+            "when": "2024-03-07T21:24:09.159Z",
+            "comments": "TEST     akjsd;lfkjas;lkdfj;laksjdf",
+            "connected": "yes",
+            "connectionType": "call"
+        },
+        "title": "Connection",
+        "author": {
+            "_id": "6509b5ed6a80990034def598",
+            "name": "Joshua Ferrari"
+        },
+        "managedAuthor": {
+            "_id": "6509b5ee6a80990034def599",
+            "title": "Joshua Ferrari"
+        },
+        "_type": "post",
+        "definition": "connection",
+        "created": "2024-03-07T21:24:29.717Z",
+        "fullDefinition": {
+            "definitionName": "connection",
+            "title": "Connection",
+            "plural": "Connection",
+            "fields": [
+                {
+                    "defaultValues": [],
+                    "options": [
+                        {
+                            "name": "Call",
+                            "value": "call"
+                        },
+                        {
+                            "name": "Video Call",
+                            "value": "videocall"
+                        },
+                        {
+                            "name": "SMS Message",
+                            "value": "sms"
+                        },
+                        {
+                            "name": "In person",
+                            "value": "inperson"
+                        },
+                        {
+                            "name": "Email",
+                            "value": "email"
+                        }
+                    ],
+                    "allowedValues": [],
+                    "defaultReferences": [],
+                    "allowedReferences": [],
+                    "developerOnly": [],
+                    "minimum": 1,
+                    "askCount": 0,
+                    "maximum": 1,
+                    "fields": [],
+                    "type": "string",
+                    "directive": "select",
+                    "params": {
+                        "allowedTags": []
+                    },
+                    "title": "Connection Type",
+                    "key": "connectionType",
+                    "description": "How did you connect with this contact"
+                },
+                {
+                    "defaultValues": [],
+                    "options": [
+                        {
+                            "name": "Yes",
+                            "value": "yes"
+                        },
+                        {
+                            "name": "No / Not yet",
+                            "value": "no"
+                        }
+                    ],
+                    "allowedValues": [],
+                    "defaultReferences": [],
+                    "allowedReferences": [],
+                    "developerOnly": [],
+                    "minimum": 1,
+                    "askCount": 0,
+                    "maximum": 1,
+                    "fields": [],
+                    "type": "string",
+                    "directive": "button-select",
+                    "title": "Connected",
+                    "key": "connected",
+                    "params": {
+                        "allowedTags": []
+                    },
+                    "expressions": {
+                        "hide": "data.connectionType == 'inperson'"
+                    },
+                    "description": "Did they respond / reply?"
+                },
+                {
+                    "defaultValues": [
+                        "now"
+                    ],
+                    "options": [],
+                    "allowedValues": [],
+                    "defaultReferences": [],
+                    "allowedReferences": [],
+                    "developerOnly": [],
+                    "minimum": 1,
+                    "askCount": 0,
+                    "maximum": 1,
+                    "fields": [],
+                    "type": "date",
+                    "directive": "date-select",
+                    "title": "When did you connect?",
+                    "key": "when",
+                    "errorMessage": "Please select a valid date"
+                },
+                {
+                    "defaultValues": [],
+                    "options": [],
+                    "allowedValues": [],
+                    "defaultReferences": [],
+                    "allowedReferences": [],
+                    "developerOnly": [],
+                    "minimum": 0,
+                    "askCount": 0,
+                    "maximum": 1,
+                    "fields": [],
+                    "type": "string",
+                    "directive": "textarea",
+                    "params": {
+                        "allowedTags": []
+                    },
+                    "title": "Comments",
+                    "key": "comments"
+                }
+            ],
+            "account": "5703199feffc46c51411d98a"
+        }
+    }
+]
