@@ -1,3 +1,5 @@
+import { redirect } from "react-router";
+
 const API_URL = "https://api.fluro.io";
 const LOCAL_STORAGE_USER_KEY = "fluroUser";
 const LOCAL_STORAGE_TOKEN_KEY = "fluroToken";
@@ -80,7 +82,8 @@ type RefreshTokenResponse = {
 export async function refreshToken() {
   const user = getUser();
   if (!user) {
-    return;
+    logout();
+    throw redirect("/login");
   }
   const response = await fetch(`${API_URL}/token/refresh`, {
     method: "POST",
@@ -89,6 +92,10 @@ export async function refreshToken() {
       "Content-Type": "application/json",
     },
   });
+  if (!response.ok) {
+    logout();
+    throw redirect("/login");
+  }
 
   const { token, expires } = (await response.json()) as RefreshTokenResponse;
 

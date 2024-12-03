@@ -137,6 +137,9 @@ export async function getContact(contact: string) {
     firstName: string;
     lastName: string;
     preferredName: string;
+    local: string[];
+    phoneNumbers: string[];
+    emails: string[];
     _type: string;
     status: string;
     realms: {
@@ -185,4 +188,11 @@ export async function getNotes(contact: string) {
   return authorizedApiFetch(`${API_URL}/info/posts?contact=${contact}`, {
     method: "GET",
   }) as Promise<NoteResponse[]>;
+}
+
+export async function createNote(contact: string, body: string) {
+  return authorizedApiFetch(`${API_URL}/post/${contact}/note`, {
+    method: "POST",
+    body: JSON.stringify({ data: { body } }),
+  });
 }
