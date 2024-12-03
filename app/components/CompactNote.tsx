@@ -26,18 +26,18 @@ function CompactNote({
   return (
     <div className="flex flex-wrap items-center text-sm">
       {/* Date */}
-      <div className="text-gray-500 dark:text-gray-400 whitespace-nowrap w-[10ch]">
+      <div className="text-zinc-500 dark:text-zinc-400 whitespace-nowrap w-[10ch]">
         {date}
       </div>
 
       {/* Author */}
-      <div className="text-gray-500 dark:text-gray-400 whitespace-nowrap pr-1">
+      <div className="text-zinc-500 dark:text-zinc-400 whitespace-nowrap pr-1">
         {authorName}
       </div>
 
       {/* Connection-specific elements */}
       {isConnection && (
-        <div className="text-gray-600 dark:text-gray-300 whitespace-nowrap pr-1">
+        <div className="text-zinc-600 dark:text-zinc-300 whitespace-nowrap pr-1">
           {connectionType ?? "Unknown connection type"} (
           {connected ? (
             <span className="text-green-600">✓</span>
@@ -50,16 +50,16 @@ function CompactNote({
 
       {/* Note body or connection comments */}
       {isConnection ? (
-        <div className="text-gray-700 dark:text-gray-200 break-words">
+        <div className="text-zinc-700 dark:text-zinc-200 break-words">
           {data.comments || (
-            <span className="italic text-gray-500 dark:text-gray-400">
+            <span className="italic text-zinc-500 dark:text-zinc-400">
               No comments
             </span>
           )}
         </div>
       ) : (
         <div
-          className="text-gray-700 dark:text-gray-200 break-words"
+          className="text-zinc-700 dark:text-zinc-200 break-words"
           dangerouslySetInnerHTML={{ __html: data.body }}
         />
       )}
