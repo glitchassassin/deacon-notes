@@ -54,10 +54,10 @@ export default function Layout({ loaderData }: Route.ComponentProps) {
         </div>
         <div
           className={`h-1 bg-sky-500 transition-all duration-300 ease-in-out ${
-            navigation.state === "loading" ? "opacity-100" : "opacity-0"
+            navigation.state !== "idle" ? "opacity-100" : "opacity-0"
           }`}
           style={{
-            width: navigation.state === "loading" ? "100%" : "0%",
+            width: navigation.state !== "idle" ? "100%" : "0%",
             position: "absolute",
             bottom: "0",
             left: "0",
