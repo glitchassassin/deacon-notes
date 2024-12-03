@@ -1,18 +1,27 @@
 import { Link } from "react-router";
-import { getContacts } from "~/services/contacts";
+import { getContactsList } from "~/services/contacts";
 import type { Route } from "./+types/_layout.lists.$list";
 
 export async function clientLoader({ params }: Route.LoaderArgs) {
-  const contacts = await getContacts(params.list);
-  return { contacts };
+  const { title, provisionalMembers } = await getContactsList(params.list);
+  return { title, contacts: provisionalMembers };
+}
+
+export function meta({ data }: Route.MetaArgs) {
+  return [
+    {
+      title: `${data.title}`,
+    },
+  ];
 }
 
 export default function Dashboard({ loaderData }: Route.ComponentProps) {
-  const { contacts } = loaderData;
+  const { title, contacts } = loaderData;
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-800 p-4">
       <main className="max-w-4xl mx-auto">
+        <h1 className="text-2xl font-bold mb-4">{title}</h1>
         <div className="grid gap-4">
           {contacts.map((contact) => (
             <div

@@ -3,6 +3,14 @@ import ExternalLink from "~/icons/ExternalLink";
 import { getContact, getNotes } from "~/services/contacts";
 import type { Route } from "./+types/_layout.contacts.$contact";
 
+export function meta({ data }: Route.MetaArgs) {
+  return [
+    {
+      title: `${data.contact.preferredName} ${data.contact.lastName}`,
+    },
+  ];
+}
+
 export async function clientLoader({ params }: Route.LoaderArgs) {
   const contact = await getContact(params.contact);
   const deaconCareGroup = contact.realms.find((realm) =>

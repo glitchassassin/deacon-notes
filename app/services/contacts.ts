@@ -21,7 +21,7 @@ export async function getContactLists() {
           },
         ],
       },
-      search: "",
+      search: "Deacon Care Group",
       includeArchived: false,
       allDefinitions: false,
       searchInheritable: false,
@@ -40,13 +40,14 @@ export async function getContactLists() {
   >;
 }
 
-export async function getContacts(contactList: string) {
+export async function getContactsList(contactList: string) {
   const results = (await authorizedApiFetch(
     `${API_URL}/content/get/${contactList}?type=team&appendContactDetail=all&appendAssignments=all`,
     {
       method: "GET",
     }
   )) as {
+    title: string;
     provisionalMembers: {
       title: string;
       created: string;
@@ -61,7 +62,7 @@ export async function getContacts(contactList: string) {
     }[];
   };
 
-  return results.provisionalMembers;
+  return results;
 }
 
 export async function getContact(contact: string) {

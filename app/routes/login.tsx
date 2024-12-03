@@ -1,6 +1,14 @@
 import { Form, redirect, useActionData } from "react-router";
 import { login } from "~/services/auth";
 
+export function meta() {
+  return [
+    {
+      title: "Login",
+    },
+  ];
+}
+
 export async function clientAction({ request }: { request: Request }) {
   const formData = await request.formData();
   const username = formData.get("username") as string;
