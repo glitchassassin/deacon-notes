@@ -1,10 +1,12 @@
 import { Link } from "react-router";
-import { getContactsList } from "~/services/contacts";
+import { getContactsList, getContactsListMetadata } from "~/services/contacts";
 import type { Route } from "./+types/_layout.lists.$list";
 
 export async function clientLoader({ params }: Route.LoaderArgs) {
-  const { title, provisionalMembers } = await getContactsList(params.list);
-  return { title, contacts: provisionalMembers };
+  const { title, _realm } = await getContactsListMetadata(params.list);
+
+  const contacts = await getContactsList(_realm);
+  return { title, contacts };
 }
 
 export function meta({ data }: Route.MetaArgs) {
@@ -13,6 +15,16 @@ export function meta({ data }: Route.MetaArgs) {
       title: `${data.title}`,
     },
   ];
+}
+
+function lastPostActivity(
+  posts: Route.ComponentProps["loaderData"]["contacts"][number]["_posts"]["all"]
+) {
+  const lastPost = posts.reduce((acc, post) => {
+    return post.updated > acc ? post.updated : acc;
+  }, "");
+  if (!lastPost) return undefined;
+  return new Date(lastPost);
 }
 
 export default function Dashboard({ loaderData }: Route.ComponentProps) {
@@ -30,9 +42,16 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
             >
               <Link
                 to={`/contacts/${contact._id}`}
-                className="block p-4 text-gray-800 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400"
+                className="p-4 text-gray-800 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 flex justify-between items-center"
               >
-                {contact.title}
+                <span>
+                  {contact.preferredName ?? contact.firstName}&nbsp;
+                  {contact.lastName}
+                </span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  {lastPostActivity(contact._posts.all)?.toLocaleDateString() ??
+                    "No activity"}
+                </span>
               </Link>
             </div>
           ))}

@@ -40,27 +40,86 @@ export async function getContactLists() {
   >;
 }
 
-export async function getContactsList(contactList: string) {
+export async function getContactsListMetadata(contactList: string) {
   const results = (await authorizedApiFetch(
-    `${API_URL}/content/get/${contactList}?type=team&appendContactDetail=all&appendAssignments=all`,
+    `${API_URL}/content/get/${contactList}?type=team`,
     {
       method: "GET",
     }
   )) as {
     title: string;
-    provisionalMembers: {
-      title: string;
-      created: string;
-      updated: string;
-      firstName: string;
-      lastName: string;
-      preferredName: string;
-      _type: string;
-      status: string;
-      realms: string[];
-      _id: string;
-    }[];
+    _id: string;
+    _realm: string;
   };
+
+  return results;
+}
+
+export async function getContactsList(contactList: string) {
+  const results = (await authorizedApiFetch(
+    `${API_URL}/content/contact/filter`,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        sort: {
+          sortKey: "lastName",
+          sortType: "string",
+          sortDirection: "asc",
+        },
+        filter: {
+          operator: "and",
+          filters: [
+            {
+              operator: "and",
+              filters: [
+                {
+                  key: "realms|mailingList",
+                  comparator: "==",
+                  values: [],
+                  guid: "1938a4c9-526c-4000-8760-479f0bdc9000",
+                  title: "Contact List",
+                  value: contactList,
+                  value2: null,
+                  dataType: "reference",
+                },
+              ],
+              guid: "1938a4c9-5210-4000-89ce-6cdab2b93000",
+            },
+          ],
+        },
+        search: "",
+        includeArchived: false,
+        allDefinitions: true,
+        searchInheritable: false,
+        includeUnmatched: false,
+        joins: ["preferredName", "_posts.all"],
+        select: [
+          "firstName",
+          "lastName",
+          "preferredName",
+          "updated",
+          "_posts.all",
+        ],
+        timezone: "America/New_York",
+      }),
+    }
+  )) as {
+    preferredName?: string;
+    firstName: string;
+    lastName: string;
+    updated: string;
+    _posts: {
+      all: {
+        _id: string;
+        _type: string;
+        created: string;
+        updated: string;
+        title: string;
+        definition: string;
+      }[];
+    };
+    _id: string;
+  }[];
 
   return results;
 }

@@ -4,7 +4,6 @@ import type { Route } from "./+types/_layout";
 
 export async function clientLoader({ request }: Route.LoaderArgs) {
   const user = getUser();
-  console.log({ user });
   if (!user && request.url !== "/login") {
     throw redirect("/login");
   }
@@ -13,12 +12,11 @@ export async function clientLoader({ request }: Route.LoaderArgs) {
 
 export default function Layout({ loaderData }: Route.ComponentProps) {
   const { user } = loaderData;
-
   const navigation = useNavigation();
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-800">
-      <nav className="bg-white dark:bg-gray-700 shadow">
+      <nav className="fixed top-0 left-0 right-0 z-10 bg-white dark:bg-gray-700 shadow">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <Link
             to="/"
@@ -54,9 +52,6 @@ export default function Layout({ loaderData }: Route.ComponentProps) {
             )}
           </div>
         </div>
-      </nav>
-
-      <div className="relative">
         <div
           className={`h-1 bg-blue-500 transition-all duration-300 ease-in-out ${
             navigation.state === "loading" ? "opacity-100" : "opacity-0"
@@ -64,10 +59,14 @@ export default function Layout({ loaderData }: Route.ComponentProps) {
           style={{
             width: navigation.state === "loading" ? "100%" : "0%",
             position: "absolute",
-            bottom: "-1px",
+            bottom: "0",
+            left: "0",
+            right: "0",
           }}
         />
-      </div>
+      </nav>
+
+      <div className="h-16"></div>
       <Outlet />
     </div>
   );

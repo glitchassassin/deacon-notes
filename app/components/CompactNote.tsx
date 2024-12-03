@@ -1,6 +1,11 @@
 import { NoteResponse } from "~/services/contacts";
 
-function CompactNote({ data, fullDefinition, created }: NoteResponse) {
+function CompactNote({
+  data,
+  fullDefinition,
+  created,
+  author: { name: authorName },
+}: NoteResponse) {
   const isConnection = fullDefinition.definitionName === "connection";
   const connectionTypeField = fullDefinition.fields.find(
     (field) => field.key === "connectionType"
@@ -12,7 +17,6 @@ function CompactNote({ data, fullDefinition, created }: NoteResponse) {
   const connectedField = fullDefinition.fields.find(
     (field) => field.key === "connected"
   );
-  console.log(connectedField);
   const connected =
     connectedField?.options?.find((option) => option.value === data.connected)
       ?.name === "Yes";
@@ -24,6 +28,11 @@ function CompactNote({ data, fullDefinition, created }: NoteResponse) {
       {/* Date */}
       <div className="text-gray-500 dark:text-gray-400 whitespace-nowrap w-[10ch]">
         {date}
+      </div>
+
+      {/* Author */}
+      <div className="text-gray-500 dark:text-gray-400 whitespace-nowrap pr-1">
+        {authorName}
       </div>
 
       {/* Connection-specific elements */}
