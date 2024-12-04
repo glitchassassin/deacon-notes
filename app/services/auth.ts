@@ -1,6 +1,7 @@
 import { redirect } from "react-router";
 
 const API_URL = "https://api.fluro.io";
+const ACCOUNT_ID = "64fa0b783758fc0034e4768c";
 const LOCAL_STORAGE_USER_KEY = "fluroUser";
 const LOCAL_STORAGE_TOKEN_KEY = "fluroToken";
 const LOCAL_STORAGE_TOKEN_EXPIRATION_KEY = "fluroTokenExpiration";
@@ -33,7 +34,7 @@ type LoginResponse = {
 export async function login(username: string, password: string) {
   const response = await fetch(`${API_URL}/token/login`, {
     method: "POST",
-    body: JSON.stringify({ username, password }),
+    body: JSON.stringify({ username, password, account: ACCOUNT_ID }),
     headers: {
       "Content-Type": "application/json",
     },
