@@ -92,7 +92,7 @@ export async function getContactsList(contactList: string) {
         allDefinitions: true,
         searchInheritable: false,
         includeUnmatched: false,
-        joins: ["preferredName", "_posts.all"],
+        joins: ["preferredName", "_posts.all", "family"],
         select: [
           "firstName",
           "lastName",
@@ -108,6 +108,15 @@ export async function getContactsList(contactList: string) {
     firstName: string;
     lastName: string;
     updated: string;
+    family?: {
+      _id: string;
+      title: string;
+      items: {
+        _id: string;
+        title: string;
+        householdRole: string;
+      }[];
+    };
     _posts: {
       all: {
         _id: string;
@@ -122,6 +131,40 @@ export async function getContactsList(contactList: string) {
   }[];
 
   return results;
+}
+
+export function groupContactsByFamily(
+  contacts: Awaited<ReturnType<typeof getContactsList>>
+) {
+  return contacts.reduce(
+    (acc, contact) => {
+      const original = (acc[contact.family?._id ?? contact._id] ??= {
+        familyId: contact.family?._id ?? contact._id,
+        familyName: contact.family?.title ?? contact.lastName,
+        parents: [],
+        children: [],
+      });
+      if (
+        contact.family?.items.find(
+          (item) => item._id === contact._id && item.householdRole === "child"
+        )
+      ) {
+        original.children.push(contact);
+      } else {
+        original.parents.push(contact);
+      }
+      return acc;
+    },
+    {} as Record<
+      string,
+      {
+        familyId: string;
+        familyName: string;
+        parents: typeof contacts;
+        children: typeof contacts;
+      }
+    >
+  );
 }
 
 export async function getContact(contact: string) {
