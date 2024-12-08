@@ -3,22 +3,32 @@ import ExternalLink from "~/icons/ExternalLink";
 import { createNote, getContact, getNotes } from "~/services/contacts";
 import type { Route } from "./+types/_layout.contacts.$contact";
 import { useFetcher } from "react-router";
+import { optimisticCache } from "~/services/cache";
+import { useEffect, useState } from "react";
 
 export function meta({ data }: Route.MetaArgs) {
+  let contact = data.contact.optimistic;
+  data.contact.fetched.then((c) => {
+    contact = c;
+  });
+
   return [
     {
-      title: `${data.contact.preferredName} ${data.contact.lastName}`,
+      title: `${contact?.preferredName ?? contact?.firstName} ${
+        contact?.lastName
+      }`,
     },
   ];
 }
 
 export async function clientLoader({ params }: Route.LoaderArgs) {
-  const contact = await getContact(params.contact);
-  const deaconCareGroup = contact.realms.find((realm) =>
-    realm.title.includes("Deacon Care Group")
+  const contact = optimisticCache(`contact:${params.contact}`, () =>
+    getContact(params.contact)
   );
-  const notes = await getNotes(params.contact);
-  return { contact, notes, deaconCareGroup };
+  const notes = optimisticCache(`notes:${params.contact}`, () =>
+    getNotes(params.contact)
+  );
+  return { contact, notes };
 }
 
 export async function clientAction({ request, params }: Route.ActionArgs) {
@@ -28,7 +38,22 @@ export async function clientAction({ request, params }: Route.ActionArgs) {
 }
 
 export default function Dashboard({ loaderData }: Route.ComponentProps) {
-  const { contact, notes, deaconCareGroup } = loaderData;
+  const {
+    contact: { optimistic: optimisticContact, fetched: fetchedContact },
+    notes: { optimistic: optimisticNotes, fetched: fetchedNotes },
+  } = loaderData;
+
+  const [contact, setContact] = useState(optimisticContact);
+  const [notes, setNotes] = useState(optimisticNotes);
+
+  useEffect(() => {
+    fetchedContact.then(setContact);
+    fetchedNotes.then(setNotes);
+  }, [fetchedContact, fetchedNotes]);
+
+  const deaconCareGroup = contact?.realms.find((realm) =>
+    realm.title.includes("Deacon Care Group")
+  );
 
   const fetcher = useFetcher();
   const isLoading = fetcher.state !== "idle";
@@ -36,19 +61,22 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   return (
     <div className="min-h-screen bg-zinc-100 dark:bg-zinc-800 p-4">
       <main className="max-w-4xl mx-auto flex flex-col gap-1">
-        <a
-          href={`https://app.fluro.io/list/contact/${contact._id}/edit`}
-          target="_blank"
-          rel="noreferrer"
-          className="hover:underline mt-2"
-        >
-          <h1 className="text-2xl font-semibold">
-            {contact.preferredName} {contact.lastName}{" "}
-            <ExternalLink className="w-4 h-4 text-zinc-500 dark:text-zinc-400 inline-block" />
-          </h1>
-        </a>
+        {contact && (
+          <a
+            href={`https://app.fluro.io/list/contact/${contact._id}/edit`}
+            target="_blank"
+            rel="noreferrer"
+            className="hover:underline mt-2"
+          >
+            <h1 className="text-2xl font-semibold">
+              {contact?.preferredName ?? contact?.firstName} {contact?.lastName}{" "}
+              <ExternalLink className="w-4 h-4 text-zinc-500 dark:text-zinc-400 inline-block" />
+            </h1>
+          </a>
+        )}
+        {!contact && <h1 className="text-2xl font-semibold">Loading...</h1>}
         {deaconCareGroup && <div>{deaconCareGroup.title}</div>}
-        {contact.phoneNumbers.length > 0 && (
+        {contact && contact.phoneNumbers.length > 0 && (
           <div>
             Phone:{" "}
             <span className="inline-flex flex-wrap gap-2">
@@ -60,7 +88,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
             </span>
           </div>
         )}
-        {contact.emails.length > 0 && (
+        {contact && contact.emails.length > 0 && (
           <div>
             Email:{" "}
             <span className="inline-flex flex-wrap gap-2">
@@ -102,12 +130,12 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
           </div>
         </fetcher.Form>
         <div className="grid gap-2 bg-white dark:bg-zinc-700 rounded-lg shadow-sm hover:shadow-md transition-shadow p-3">
-          {notes.length === 0 && (
+          {!notes?.length && (
             <div className="text-zinc-500 dark:text-zinc-400">
               No notes found
             </div>
           )}
-          {notes.map((note) => (
+          {notes?.map((note) => (
             <CompactNote key={note._id} {...note} />
           ))}
         </div>
