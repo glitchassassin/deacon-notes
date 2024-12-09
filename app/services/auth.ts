@@ -55,9 +55,7 @@ export async function login(username: string, password: string) {
 }
 
 export function logout() {
-  localStorage.removeItem(LOCAL_STORAGE_USER_KEY);
-  localStorage.removeItem(LOCAL_STORAGE_TOKEN_KEY);
-  localStorage.removeItem(LOCAL_STORAGE_TOKEN_EXPIRATION_KEY);
+  localStorage.clear(); // remove auth data as well as cached user data
 }
 
 export function getUser() {
