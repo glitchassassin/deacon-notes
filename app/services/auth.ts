@@ -56,6 +56,7 @@ export async function login(username: string, password: string) {
 
 export function logout() {
   localStorage.clear(); // remove auth data as well as cached user data
+  return redirect("/login");
 }
 
 export function getUser() {
@@ -81,25 +82,27 @@ type RefreshTokenResponse = {
 export async function refreshToken() {
   const user = getUser();
   if (!user) {
-    logout();
-    throw redirect("/login");
+    throw logout();
   }
-  const response = await fetch(`${API_URL}/token/refresh`, {
-    method: "POST",
-    body: JSON.stringify({ refreshToken: user.refreshToken }),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  if (!response.ok) {
-    logout();
-    throw redirect("/login");
+  try {
+    const response = await fetch(`${API_URL}/token/refresh`, {
+      method: "POST",
+      body: JSON.stringify({ refreshToken: user.refreshToken }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw logout();
+    }
+
+    const { token, expires } = (await response.json()) as RefreshTokenResponse;
+
+    localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, token);
+    localStorage.setItem(LOCAL_STORAGE_TOKEN_EXPIRATION_KEY, expires);
+
+    return token;
+  } catch (error) {
+    throw logout();
   }
-
-  const { token, expires } = (await response.json()) as RefreshTokenResponse;
-
-  localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, token);
-  localStorage.setItem(LOCAL_STORAGE_TOKEN_EXPIRATION_KEY, expires);
-
-  return token;
 }

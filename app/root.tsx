@@ -1,3 +1,5 @@
+import "./services/sentry";
+import * as Sentry from "@sentry/react";
 import {
   isRouteErrorResponse,
   Links,
@@ -5,6 +7,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useNavigate,
 } from "react-router";
 
 import type { Route } from "./+types/root";
@@ -61,6 +64,15 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     details = error.message;
     stack = error.stack;
   }
+
+  const navigate = useNavigate();
+
+  Sentry.showReportDialog({
+    eventId: Sentry.captureException(error),
+    onClose: () => {
+      navigate("/");
+    },
+  });
 
   return (
     <main className="pt-16 p-4 container mx-auto">
