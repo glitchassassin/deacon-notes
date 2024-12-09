@@ -6,16 +6,11 @@ import { useFetcher } from "react-router";
 import { optimisticCache } from "~/services/cache";
 import { useEffect, useState } from "react";
 
-export function meta({ data }: Route.MetaArgs) {
-  let contact = data.contact.optimistic;
-  data.contact.fetched.then((c) => {
-    contact = c;
-  });
-
+export function meta({ data: { initialContact } }: Route.MetaArgs) {
   return [
     {
-      title: `${contact?.preferredName ?? contact?.firstName} ${
-        contact?.lastName
+      title: `${initialContact?.preferredName ?? initialContact?.firstName} ${
+        initialContact?.lastName
       }`,
     },
   ];
@@ -28,7 +23,8 @@ export async function clientLoader({ params }: Route.LoaderArgs) {
   const notes = optimisticCache(`notes:${params.contact}`, () =>
     getNotes(params.contact)
   );
-  return { contact, notes };
+  const initialContact = contact.optimistic ?? (await contact.fetched);
+  return { contact, notes, initialContact };
 }
 
 export async function clientAction({ request, params }: Route.ActionArgs) {
