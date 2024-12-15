@@ -143,6 +143,7 @@ export function groupContactsByFamily(
         familyName: contact.family?.title ?? contact.lastName,
         parents: [],
         children: [],
+        notes: [],
       });
       if (
         contact.family?.items.find(
@@ -162,9 +163,35 @@ export function groupContactsByFamily(
         familyName: string;
         parents: typeof contacts;
         children: typeof contacts;
+        notes: NoteResponse[];
       }
     >
   );
+}
+
+/**
+ * Adds the three most recent notes for each contact to the family object
+ */
+export async function enrichWithNotes(
+  contacts: Awaited<ReturnType<typeof groupContactsByFamily>>
+) {
+  const promises = [];
+  for (const family in contacts) {
+    for (const contact of [
+      ...contacts[family].parents,
+      ...contacts[family].children,
+    ]) {
+      if (contact._posts.all.length > 0) {
+        promises.push(
+          getNotes(contact._id).then((notes) => {
+            contacts[family].notes.push(...notes.slice(0, 3));
+          })
+        );
+      }
+    }
+  }
+  await Promise.all(promises);
+  return contacts;
 }
 
 export async function getContact(contact: string) {

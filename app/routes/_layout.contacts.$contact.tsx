@@ -132,7 +132,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
             </div>
           )}
           {notes?.map((note) => (
-            <CompactNote key={note._id} {...note} />
+            <CompactNote key={note._id} note={note} />
           ))}
         </div>
       </main>

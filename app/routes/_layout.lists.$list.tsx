@@ -1,4 +1,5 @@
 import {
+  enrichWithNotes,
   getContactsList,
   getContactsListMetadata,
   groupContactsByFamily,
@@ -12,7 +13,7 @@ export async function clientLoader({ params }: Route.LoaderArgs) {
   const { title, _realm } = await getContactsListMetadata(params.list);
 
   const contacts = optimisticCache(`contacts-list-${_realm}`, () =>
-    getContactsList(_realm).then(groupContactsByFamily)
+    getContactsList(_realm).then(groupContactsByFamily).then(enrichWithNotes)
   ); // Defer promise
   return { title, contacts };
 }
