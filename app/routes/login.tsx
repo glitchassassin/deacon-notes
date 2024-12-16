@@ -39,7 +39,7 @@ export default function Login() {
         )}
         <div className="mb-4">
           <label className="block text-zinc-700 dark:text-zinc-300">
-            Username
+            Email Address
           </label>
           <input
             type="text"
