@@ -144,6 +144,7 @@ export function groupContactsByFamily(
         parents: [],
         children: [],
         notes: [],
+        updated: contact._posts.all[0]?.updated,
       });
       if (
         contact.family?.items.find(
@@ -153,6 +154,9 @@ export function groupContactsByFamily(
         original.children.push(contact);
       } else {
         original.parents.push(contact);
+      }
+      if ((contact._posts.all[0]?.updated ?? "") > (original.updated ?? "")) {
+        original.updated = contact._posts.all[0].updated;
       }
       return acc;
     },
@@ -164,6 +168,7 @@ export function groupContactsByFamily(
         parents: typeof contacts;
         children: typeof contacts;
         notes: NoteResponse[];
+        updated?: string;
       }
     >
   );

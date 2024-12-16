@@ -37,22 +37,69 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   } = loaderData;
 
   const [contacts, setContacts] = useState(optimistic);
+  const [sortBy, setSortBy] = useState<"familyName" | "updated">("familyName");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
   useEffect(() => {
     fetched.then(setContacts);
   }, [fetched]);
+
+  const sortedContacts = contacts
+    ? Object.values(contacts).sort((a, b) => {
+        const multiplier = sortDirection === "asc" ? 1 : -1;
+        if (sortBy === "familyName") {
+          return multiplier * a.familyName.localeCompare(b.familyName);
+        } else {
+          return multiplier * (a.updated ?? "").localeCompare(b.updated ?? "");
+        }
+      })
+    : null;
+
+  const toggleSort = (field: "familyName" | "updated") => {
+    if (sortBy === field) {
+      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortBy(field);
+      setSortDirection("asc");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-zinc-100 dark:bg-zinc-800 p-4">
       <main className="max-w-4xl mx-auto">
         <h1 className="text-2xl font-bold mb-4">{title}</h1>
-        {!contacts && (
+        <div className="flex gap-2 mb-4">
+          <button
+            onClick={() => toggleSort("familyName")}
+            className={`px-3 py-1 rounded ${
+              sortBy === "familyName"
+                ? "bg-blue-500 text-white"
+                : "bg-white dark:bg-zinc-700 text-zinc-800 dark:text-zinc-100"
+            }`}
+          >
+            Family Name{" "}
+            {sortBy === "familyName" && (sortDirection === "asc" ? "↑" : "↓")}
+          </button>
+          <button
+            onClick={() => toggleSort("updated")}
+            className={`px-3 py-1 rounded ${
+              sortBy === "updated"
+                ? "bg-blue-500 text-white"
+                : "bg-white dark:bg-zinc-700 text-zinc-800 dark:text-zinc-100"
+            }`}
+          >
+            Last Updated{" "}
+            {sortBy === "updated" && (sortDirection === "asc" ? "↑" : "↓")}
+          </button>
+        </div>
+        {!sortedContacts && (
           <div className="bg-white dark:bg-zinc-700 rounded-lg shadow-sm hover:shadow-md transition-shadow p-4 text-zinc-800 dark:text-zinc-100">
             Loading...
           </div>
         )}
-        {contacts && (
+        {sortedContacts && (
           <div className="grid gap-4">
-            {Object.values(contacts).map((family) => (
+            {sortedContacts.map((family) => (
               <Family key={family.familyId} family={family} />
             ))}
           </div>
