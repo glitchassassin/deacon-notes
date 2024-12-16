@@ -68,28 +68,37 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
     <div className="min-h-screen bg-zinc-100 dark:bg-zinc-800 p-4">
       <main className="max-w-4xl mx-auto">
         <h1 className="text-2xl font-bold mb-4">{title}</h1>
-        <div className="flex gap-2 mb-4">
+        <div className="flex gap-2 mb-4 print:hidden">
+          <div className="flex gap-2">
+            <button
+              onClick={() => toggleSort("familyName")}
+              className={`px-3 py-1 rounded text-sm md:text-base ${
+                sortBy === "familyName"
+                  ? "bg-blue-500 text-white"
+                  : "bg-white dark:bg-zinc-700 text-zinc-800 dark:text-zinc-100"
+              }`}
+            >
+              Family Name{" "}
+              {sortBy === "familyName" && (sortDirection === "asc" ? "↑" : "↓")}
+            </button>
+            <button
+              onClick={() => toggleSort("updated")}
+              className={`px-3 py-1 rounded text-sm md:text-base ${
+                sortBy === "updated"
+                  ? "bg-blue-500 text-white"
+                  : "bg-white dark:bg-zinc-700 text-zinc-800 dark:text-zinc-100"
+              }`}
+            >
+              Last Updated{" "}
+              {sortBy === "updated" && (sortDirection === "asc" ? "↑" : "↓")}
+            </button>
+          </div>
+          <div className="flex-grow"></div>
           <button
-            onClick={() => toggleSort("familyName")}
-            className={`px-3 py-1 rounded ${
-              sortBy === "familyName"
-                ? "bg-blue-500 text-white"
-                : "bg-white dark:bg-zinc-700 text-zinc-800 dark:text-zinc-100"
-            }`}
+            onClick={() => window.print()}
+            className="px-3 py-1 rounded text-sm md:text-base bg-white dark:bg-zinc-700 text-zinc-800 dark:text-zinc-100"
           >
-            Family Name{" "}
-            {sortBy === "familyName" && (sortDirection === "asc" ? "↑" : "↓")}
-          </button>
-          <button
-            onClick={() => toggleSort("updated")}
-            className={`px-3 py-1 rounded ${
-              sortBy === "updated"
-                ? "bg-blue-500 text-white"
-                : "bg-white dark:bg-zinc-700 text-zinc-800 dark:text-zinc-100"
-            }`}
-          >
-            Last Updated{" "}
-            {sortBy === "updated" && (sortDirection === "asc" ? "↑" : "↓")}
+            Print
           </button>
         </div>
         {!sortedContacts && (
@@ -99,6 +108,11 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
         )}
         {sortedContacts && (
           <div className="grid gap-4">
+            <span className="hidden print:flex flex-row gap-2">
+              <span className="text-sm flex-[1]">Name</span>
+              <span className="text-sm flex-[2]">Phone</span>
+              <span className="text-sm flex-[2]">Email</span>
+            </span>
             {sortedContacts.map((family) => (
               <Family key={family.familyId} family={family} />
             ))}

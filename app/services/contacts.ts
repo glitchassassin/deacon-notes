@@ -92,12 +92,20 @@ export async function getContactsList(contactList: string) {
         allDefinitions: true,
         searchInheritable: false,
         includeUnmatched: false,
-        joins: ["preferredName", "_posts.all", "family"],
+        joins: [
+          "preferredName",
+          "phoneNumbers",
+          "emails",
+          "_posts.all",
+          "family",
+        ],
         select: [
           "firstName",
           "lastName",
           "preferredName",
           "updated",
+          "phoneNumbers",
+          "emails",
           "_posts.all",
         ],
         timezone: "America/New_York",
@@ -107,6 +115,8 @@ export async function getContactsList(contactList: string) {
     preferredName?: string;
     firstName: string;
     lastName: string;
+    phoneNumbers: string[];
+    emails: string[];
     updated: string;
     family?: {
       _id: string;

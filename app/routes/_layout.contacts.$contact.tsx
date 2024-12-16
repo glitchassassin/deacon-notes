@@ -98,7 +98,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
         )}
         <fetcher.Form
           method="post"
-          className="bg-white dark:bg-zinc-700 rounded-lg shadow-sm hover:shadow-md transition-shadow p-3 my-4"
+          className="bg-white dark:bg-zinc-700 rounded-lg shadow-sm hover:shadow-md transition-shadow p-3 my-4 print:hidden"
         >
           <div className="flex flex-col gap-3">
             <div>
@@ -125,7 +125,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
             </button>
           </div>
         </fetcher.Form>
-        <div className="grid gap-2 bg-white dark:bg-zinc-700 rounded-lg shadow-sm hover:shadow-md transition-shadow p-3">
+        <div className="grid gap-2 bg-white dark:bg-zinc-700 rounded-lg shadow-sm print:shadow-none hover:shadow-md transition-shadow p-3">
           {!notes?.length && (
             <div className="text-zinc-500 dark:text-zinc-400">
               No notes found
