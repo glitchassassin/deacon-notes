@@ -4,12 +4,16 @@ import {
   getContactsListMetadata,
   groupContactsByFamily,
 } from "~/services/contacts";
-import type { Route } from "./+types/_layout.lists.$list";
+import type { Route } from "./+types/_layout.lists.($list)";
 import { useEffect, useState } from "react";
 import { Family } from "~/components/Family";
 import { optimisticCache } from "~/services/cache";
+import { redirect } from "react-router";
 
 export async function clientLoader({ params }: Route.LoaderArgs) {
+  if (!params.list) {
+    throw redirect("/");
+  }
   const { title, _realm } = await getContactsListMetadata(params.list);
 
   const contacts = optimisticCache(`contacts-list-${_realm}`, () =>

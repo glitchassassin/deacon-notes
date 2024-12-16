@@ -26,22 +26,14 @@ export default function Layout({ loaderData }: Route.ComponentProps) {
           </Link>
           <div className="flex items-center">
             {user ? (
-              <>
-                <Link
-                  to="/lists"
-                  className="text-zinc-800 dark:text-white mr-4 ml-4"
+              <Form method="post" action="/logout">
+                <button
+                  type="submit"
+                  className="bg-red-700 text-white px-3 py-1 rounded hover:bg-red-800 transition"
                 >
-                  Contact Lists
-                </Link>
-                <Form method="post" action="/logout">
-                  <button
-                    type="submit"
-                    className="bg-red-700 text-white px-3 py-1 rounded hover:bg-red-800 transition"
-                  >
-                    Logout
-                  </button>
-                </Form>
-              </>
+                  Logout
+                </button>
+              </Form>
             ) : (
               <Link
                 to="/login"
