@@ -55,94 +55,130 @@ export async function getContactsListMetadata(contactList: string) {
   return results;
 }
 
-export async function getContactsList(contactList: string) {
-  const results = (await authorizedApiFetch(
-    `${API_URL}/content/contact/filter`,
-    {
-      method: "POST",
-      body: JSON.stringify({
-        sort: {
-          sortKey: "lastName",
-          sortType: "string",
-          sortDirection: "asc",
-        },
-        filter: {
-          operator: "and",
-          filters: [
-            {
-              operator: "and",
-              filters: [
-                {
-                  key: "realms|mailingList",
-                  comparator: "==",
-                  values: [],
-                  guid: "1938a4c9-526c-4000-8760-479f0bdc9000",
-                  title: "Contact List",
-                  value: contactList,
-                  value2: null,
-                  dataType: "reference",
-                },
-              ],
-              guid: "1938a4c9-5210-4000-89ce-6cdab2b93000",
-            },
-          ],
-        },
-        search: "",
-        includeArchived: false,
-        allDefinitions: true,
-        searchInheritable: false,
-        includeUnmatched: false,
-        joins: [
-          "preferredName",
-          "phoneNumbers",
-          "emails",
-          "_posts.all",
-          "family",
-        ],
-        select: [
-          "firstName",
-          "lastName",
-          "preferredName",
-          "updated",
-          "phoneNumbers",
-          "emails",
-          "_ss_householdID",
-          "_posts.all",
-        ],
-        timezone: "America/New_York",
-      }),
-    }
-  )) as {
-    preferredName?: string;
-    firstName: string;
-    lastName: string;
-    phoneNumbers: string[];
-    emails: string[];
-    updated: string;
-    _ss_householdID: string;
-    family?: {
+interface ContactFilterOptions {
+  sort?: {
+    sortKey: string;
+    sortType: string;
+    sortDirection: "asc" | "desc";
+  };
+  search?: string;
+  contactList?: string;
+  includeArchived?: boolean;
+  allDefinitions?: boolean;
+  searchInheritable?: boolean;
+  includeUnmatched?: boolean;
+  joins?: string[];
+  select?: string[];
+  timezone?: string;
+}
+
+export type Contact = {
+  preferredName?: string;
+  firstName: string;
+  lastName: string;
+  phoneNumbers: string[];
+  emails: string[];
+  updated: string;
+  _ss_householdID: string;
+  family?: {
+    _id: string;
+    title: string;
+    items: {
       _id: string;
       title: string;
-      items: {
-        _id: string;
-        title: string;
-        householdRole: string;
-      }[];
-    };
-    _posts: {
-      all: {
-        _id: string;
-        _type: string;
-        created: string;
-        updated: string;
-        title: string;
-        definition: string;
-      }[];
-    };
+      householdRole: string;
+    }[];
+  };
+  realms: {
     _id: string;
+    title: string;
   }[];
+  _posts: {
+    all: {
+      _id: string;
+      _type: string;
+      created: string;
+      updated: string;
+      title: string;
+      definition: string;
+    }[];
+  };
+  _id: string;
+};
 
-  return results;
+export async function filterContacts({
+  sort = {
+    sortKey: "lastName",
+    sortType: "string",
+    sortDirection: "asc",
+  },
+  search = "",
+  contactList,
+  includeArchived = false,
+  allDefinitions = true,
+  searchInheritable = false,
+  includeUnmatched = false,
+  joins = ["preferredName", "phoneNumbers", "emails", "_posts.all", "family"],
+  select = [
+    "firstName",
+    "lastName",
+    "preferredName",
+    "updated",
+    "phoneNumbers",
+    "emails",
+    "realms",
+    "_ss_householdID",
+    "_posts.all",
+  ],
+  timezone = "America/New_York",
+}: ContactFilterOptions = {}) {
+  const filters: any[] = [];
+
+  if (contactList) {
+    filters.push({
+      operator: "and",
+      filters: [
+        {
+          key: "realms|mailingList",
+          comparator: "==",
+          values: [],
+          guid: "1938a4c9-526c-4000-8760-479f0bdc9000",
+          title: "Contact List",
+          value: contactList,
+          value2: null,
+          dataType: "reference",
+        },
+      ],
+      guid: "1938a4c9-5210-4000-89ce-6cdab2b93000",
+    });
+  }
+
+  return authorizedApiFetch(`${API_URL}/content/contact/filter`, {
+    method: "POST",
+    body: JSON.stringify({
+      sort,
+      filter: {
+        operator: "and",
+        filters,
+      },
+      search,
+      includeArchived,
+      allDefinitions,
+      searchInheritable,
+      includeUnmatched,
+      joins,
+      select,
+      timezone,
+    }),
+  }) as Promise<Contact[]>;
+}
+
+export async function getContactsList(contactList: string) {
+  return filterContacts({ contactList });
+}
+
+export async function searchContacts(query: string) {
+  return filterContacts({ search: query });
 }
 
 export function groupContactsByFamily(
@@ -157,6 +193,7 @@ export function groupContactsByFamily(
         children: [],
         notes: [],
         updated: contact._posts.all[0]?.updated,
+        deaconCareGroup: undefined,
       });
       if (
         contact.family?.items.find(
@@ -167,6 +204,9 @@ export function groupContactsByFamily(
       } else {
         original.parents.push(contact);
         original.familyName = contact.family?.title ?? contact.lastName;
+        original.deaconCareGroup ??= contact.realms
+          .find((realm) => realm.title.startsWith("Deacon Care Group - "))
+          ?.title.replace("Deacon Care Group - ", "");
       }
       if ((contact._posts.all[0]?.updated ?? "") > (original.updated ?? "")) {
         original.updated = contact._posts.all[0].updated;
@@ -182,6 +222,7 @@ export function groupContactsByFamily(
         children: typeof contacts;
         notes: NoteResponse[];
         updated?: string;
+        deaconCareGroup?: string;
       }
     >
   );

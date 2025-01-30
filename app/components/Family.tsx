@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import { groupContactsByFamily } from "~/services/contacts";
 import CompactNote from "./CompactNote";
 import { formatPhoneNumber } from "~/utils/format";
+import type { Contact, NoteResponse } from "~/services/contacts";
 
 function lastPostActivity(
   posts: {
@@ -39,11 +40,31 @@ function FamilyContact({ contact }: { contact: Family["parents"][number] }) {
   );
 }
 
-export function Family({ family }: { family: Family }) {
+interface FamilyProps {
+  family: {
+    familyId: string;
+    familyName: string;
+    parents: Contact[];
+    children: Contact[];
+    notes: NoteResponse[];
+    updated?: string;
+    deaconCareGroup?: string;
+  };
+  showDeaconCareGroup?: boolean;
+}
+
+export function Family({ family, showDeaconCareGroup }: FamilyProps) {
   return (
     <div className="flex flex-col gap-4 print:p-0 p-4 bg-white dark:bg-zinc-700 rounded-lg print:shadow-none shadow-sm transition-shadow text-zinc-800 dark:text-zinc-100">
       <div className="flex flex-col">
-        <h2 className="text-lg font-semibold">{family.familyName} Family</h2>
+        <h2 className="text-lg font-semibold">
+          {family.familyName} Family
+          {showDeaconCareGroup && family.deaconCareGroup && (
+            <span className="font-normal text-zinc-500 dark:text-zinc-400 ml-2">
+              ({family.deaconCareGroup})
+            </span>
+          )}
+        </h2>
         {family.parents.map((contact) => (
           <FamilyContact key={contact._id} contact={contact} />
         ))}
