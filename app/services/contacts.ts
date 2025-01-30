@@ -106,6 +106,7 @@ export async function getContactsList(contactList: string) {
           "updated",
           "phoneNumbers",
           "emails",
+          "_ss_householdID",
           "_posts.all",
         ],
         timezone: "America/New_York",
@@ -118,6 +119,7 @@ export async function getContactsList(contactList: string) {
     phoneNumbers: string[];
     emails: string[];
     updated: string;
+    _ss_householdID: string;
     family?: {
       _id: string;
       title: string;
@@ -148,8 +150,8 @@ export function groupContactsByFamily(
 ) {
   return contacts.reduce(
     (acc, contact) => {
-      const original = (acc[contact.family?._id ?? contact._id] ??= {
-        familyId: contact.family?._id ?? contact._id,
+      const original = (acc[contact._ss_householdID || contact._id] ??= {
+        familyId: contact._ss_householdID || contact._id,
         familyName: contact.family?.title ?? contact.lastName,
         parents: [],
         children: [],
@@ -164,6 +166,7 @@ export function groupContactsByFamily(
         original.children.push(contact);
       } else {
         original.parents.push(contact);
+        original.familyName = contact.family?.title ?? contact.lastName;
       }
       if ((contact._posts.all[0]?.updated ?? "") > (original.updated ?? "")) {
         original.updated = contact._posts.all[0].updated;

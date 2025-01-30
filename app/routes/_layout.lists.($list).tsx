@@ -48,7 +48,9 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
     ? Object.values(contacts).sort((a, b) => {
         const multiplier = sortDirection === "asc" ? 1 : -1;
         if (sortBy === "familyName") {
-          return multiplier * a.familyName.localeCompare(b.familyName);
+          return (
+            multiplier * (a.familyName ?? "").localeCompare(b.familyName ?? "")
+          );
         } else {
           return multiplier * (a.updated ?? "").localeCompare(b.updated ?? "");
         }
