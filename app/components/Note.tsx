@@ -35,7 +35,7 @@ const TextAreaField = ({
   value: string;
 }) => (
   <div key={field.key} className="mb-4">
-    <label className="block text-sm font-medium text-zinc-800 dark:text-zinc-100">
+    <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
       {field.title}
     </label>
     <div className="mt-1">{value}</div>
@@ -44,11 +44,11 @@ const TextAreaField = ({
 
 const SelectField = ({ field, value }: { field: NoteField; value: string }) => (
   <div key={field.key} className="mb-4">
-    <label className="block text-sm font-medium text-zinc-800 dark:text-zinc-100">
+    <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
       {field.title}
     </label>
     {field.description && (
-      <p className="mt-1 text-sm text-zinc-500">{field.description}</p>
+      <p className="mt-1 text-sm text-gray-500">{field.description}</p>
     )}
     <div className="mt-1">
       {field.options?.find((opt) => opt.value === value)?.name || value}
@@ -58,7 +58,7 @@ const SelectField = ({ field, value }: { field: NoteField; value: string }) => (
 
 const DateField = ({ field, value }: { field: NoteField; value: string }) => (
   <div key={field.key} className="mb-4">
-    <label className="block text-sm font-medium text-zinc-800 dark:text-zinc-100">
+    <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
       {field.title}
     </label>
     <div className="mt-1">{new Date(value).toLocaleDateString()}</div>
@@ -73,7 +73,7 @@ const DefaultField = ({
   value: string;
 }) => (
   <div key={field.key} className="mb-4">
-    <label className="block text-sm font-medium text-zinc-800 dark:text-zinc-100">
+    <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
       {field.title}
     </label>
     <div className="mt-1">{value}</div>
@@ -98,10 +98,10 @@ function Note({ data, fullDefinition, created, author }: NoteProps) {
   };
 
   return (
-    <div className="bg-white dark:bg-zinc-700 rounded-lg shadow-sm hover:shadow-md transition-shadow p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow p-6">
       <div className="mb-6">
         <h2 className="text-xl font-semibold">{fullDefinition.title}</h2>
-        <div className="text-sm text-zinc-500">
+        <div className="text-sm text-gray-500">
           By {author.name} on {new Date(created).toLocaleDateString()}
         </div>
       </div>

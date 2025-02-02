@@ -55,12 +55,12 @@ interface FamilyProps {
 
 export function Family({ family, showDeaconCareGroup }: FamilyProps) {
   return (
-    <div className="flex flex-col gap-4 print:p-0 p-4 bg-white dark:bg-zinc-700 rounded-lg print:shadow-none shadow-sm transition-shadow text-zinc-800 dark:text-zinc-100">
+    <div className="flex flex-col gap-4 print:p-0 p-4 bg-white dark:bg-gray-800 rounded-lg print:shadow-none shadow-md transition-shadow text-gray-900 dark:text-gray-100">
       <div className="flex flex-col">
         <h2 className="text-lg font-semibold">
           {family.familyName} Family
           {showDeaconCareGroup && family.deaconCareGroup && (
-            <span className="font-normal text-zinc-500 dark:text-zinc-400 ml-2">
+            <span className="font-normal text-gray-500 dark:text-gray-400 ml-2">
               ({family.deaconCareGroup})
             </span>
           )}

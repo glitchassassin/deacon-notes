@@ -55,7 +55,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   const isLoading = fetcher.state !== "idle";
 
   return (
-    <div className="min-h-screen bg-zinc-100 dark:bg-zinc-800 p-4">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
       <main className="max-w-4xl mx-auto flex flex-col gap-1">
         {contact && (
           <a
@@ -66,7 +66,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
           >
             <h1 className="text-2xl font-semibold">
               {contact?.preferredName ?? contact?.firstName} {contact?.lastName}{" "}
-              <ExternalLink className="w-4 h-4 text-zinc-500 dark:text-zinc-400 inline-block" />
+              <ExternalLink className="w-4 h-4 text-gray-500 dark:text-gray-400 inline-block" />
             </h1>
           </a>
         )}
@@ -98,13 +98,13 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
         )}
         <fetcher.Form
           method="post"
-          className="bg-white dark:bg-zinc-700 rounded-lg shadow-sm hover:shadow-md transition-shadow p-3 my-4 print:hidden"
+          className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-md transition-shadow p-3 my-4 print:hidden"
         >
           <div className="flex flex-col gap-3">
             <div>
               <label
                 htmlFor="body"
-                className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1"
+                className="block text-sm font-medium text-gray-800 dark:text-gray-300 mb-1"
               >
                 New Note
               </label>
@@ -112,7 +112,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
                 name="body"
                 id="body"
                 rows={3}
-                className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-zinc-800 px-3 py-2 text-zinc-900 dark:text-zinc-100 focus:border-blue-500 focus:ring-blue-500"
+                className="w-full rounded-md border border-gray-300 dark:border-white/20 bg-white dark:bg-gray-900 px-3 py-2 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
 
@@ -125,9 +125,9 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
             </button>
           </div>
         </fetcher.Form>
-        <div className="grid gap-2 bg-white dark:bg-zinc-700 rounded-lg shadow-sm print:shadow-none hover:shadow-md transition-shadow p-3">
+        <div className="grid gap-2 bg-white dark:bg-gray-800 rounded-lg shadow-md print:shadow-none hover:shadow-md transition-shadow p-3">
           {!notes?.length && (
-            <div className="text-zinc-500 dark:text-zinc-400">
+            <div className="text-gray-500 dark:text-gray-400">
               No notes found
             </div>
           )}

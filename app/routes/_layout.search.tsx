@@ -83,7 +83,7 @@ function SearchResultsContent({
             className={`px-3 py-1 rounded text-sm md:text-base ${
               sortBy === "familyName"
                 ? "bg-blue-500 text-white"
-                : "bg-white dark:bg-zinc-700 text-zinc-800 dark:text-zinc-100"
+                : "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             }`}
           >
             Family Name{" "}
@@ -94,7 +94,7 @@ function SearchResultsContent({
             className={`px-3 py-1 rounded text-sm md:text-base ${
               sortBy === "updated"
                 ? "bg-blue-500 text-white"
-                : "bg-white dark:bg-zinc-700 text-zinc-800 dark:text-zinc-100"
+                : "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             }`}
           >
             Last Updated{" "}
@@ -104,13 +104,13 @@ function SearchResultsContent({
         <div className="flex-grow"></div>
         <button
           onClick={() => window.print()}
-          className="px-3 py-1 rounded text-sm md:text-base bg-white dark:bg-zinc-700 text-zinc-800 dark:text-zinc-100"
+          className="px-3 py-1 rounded text-sm md:text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
         >
           Print
         </button>
       </div>
       {sortedContacts.length === 0 ? (
-        <div className="bg-white dark:bg-zinc-700 rounded-lg shadow-sm hover:shadow-md transition-shadow p-4 text-zinc-800 dark:text-zinc-100">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow p-4 text-gray-900 dark:text-gray-100">
           No results found for "{query}"
         </div>
       ) : (
@@ -137,13 +137,13 @@ export default function SearchResults({
   const { query, contacts } = loaderData;
 
   return (
-    <div className="min-h-screen bg-zinc-100 dark:bg-zinc-800 p-4">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
       <main className="max-w-4xl mx-auto">
         <h1 className="text-2xl font-bold mb-4">Search Results: {query}</h1>
         <Suspense
           key={query}
           fallback={
-            <div className="bg-white dark:bg-zinc-700 rounded-lg shadow-sm hover:shadow-md transition-shadow p-4 text-zinc-800 dark:text-zinc-100">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow p-4 text-gray-900 dark:text-gray-100">
               Loading...
             </div>
           }

@@ -23,11 +23,11 @@ export function SearchInput({
           name="query"
           defaultValue={defaultValue}
           placeholder={placeholder}
-          className="w-full px-4 py-1.5 pr-10 rounded border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:focus:ring-sky-400"
+          className="w-full px-4 py-1.5 pr-10 rounded border border-gray-300 dark:border-white/20 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:focus:ring-sky-400"
         />
         <button
           type="submit"
-          className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
           aria-label="Search"
         >
           <svg
