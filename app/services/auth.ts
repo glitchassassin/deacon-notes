@@ -72,6 +72,10 @@ export async function getToken() {
   return localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY);
 }
 
+export function getTokenSync() {
+  return localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY);
+}
+
 type RefreshTokenResponse = {
   token: string;
   refreshToken?: string;

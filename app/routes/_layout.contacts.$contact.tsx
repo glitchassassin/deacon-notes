@@ -1,6 +1,11 @@
 import CompactNote from "~/components/CompactNote";
 import ExternalLink from "~/icons/ExternalLink";
-import { createNote, getContact, getNotes } from "~/services/contacts";
+import {
+  createNote,
+  getContact,
+  getNotes,
+  getContactAvatarUrl,
+} from "~/services/contacts";
 import type { Route } from "./+types/_layout.contacts.$contact";
 import { useFetcher } from "react-router";
 import { optimisticCache } from "~/services/cache";
@@ -58,44 +63,67 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
       <main className="max-w-4xl mx-auto flex flex-col gap-1">
         {contact && (
-          <a
-            href={`https://app.fluro.io/list/contact/${contact._id}/edit`}
-            target="_blank"
-            rel="noreferrer"
-            className="hover:underline mt-2"
-          >
-            <h1 className="text-2xl font-semibold">
-              {contact?.preferredName ?? contact?.firstName} {contact?.lastName}{" "}
-              <ExternalLink className="w-4 h-4 text-gray-500 dark:text-gray-400 inline-block" />
-            </h1>
-          </a>
+          <div className="flex flex-wrap sm:flex-nowrap gap-6 mt-2">
+            <div className="w-full sm:w-auto flex-shrink-0 flex justify-center sm:justify-start">
+              <a
+                href={getContactAvatarUrl(contact._id, 600)}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <img
+                  src={getContactAvatarUrl(contact._id)}
+                  alt={`${contact?.preferredName ?? contact?.firstName} ${
+                    contact?.lastName
+                  }`}
+                  className="w-32 h-32 rounded-full object-cover hover:opacity-90 transition-opacity"
+                />
+              </a>
+            </div>
+            <div className="w-full sm:w-auto flex flex-col gap-1">
+              <a
+                href={`https://app.fluro.io/list/contact/${contact._id}/edit`}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:underline"
+              >
+                <h1 className="text-2xl font-semibold">
+                  {contact?.preferredName ?? contact?.firstName}{" "}
+                  {contact?.lastName}{" "}
+                  <ExternalLink className="w-4 h-4 text-gray-500 dark:text-gray-400 inline-block" />
+                </h1>
+              </a>
+              {deaconCareGroup && <div>{deaconCareGroup.title}</div>}
+              {contact.phoneNumbers.length > 0 && (
+                <div>
+                  Phone:{" "}
+                  <span className="inline-flex flex-wrap gap-2">
+                    {contact.local.map((phone) => (
+                      <a
+                        href={`tel:${phone.replace(/[^\d]/g, "")}`}
+                        key={phone}
+                      >
+                        {phone}
+                      </a>
+                    ))}
+                  </span>
+                </div>
+              )}
+              {contact.emails.length > 0 && (
+                <div>
+                  Email:{" "}
+                  <span className="inline-flex flex-wrap gap-2">
+                    {contact.emails.map((email) => (
+                      <a href={`mailto:${email}`} key={email}>
+                        {email}
+                      </a>
+                    ))}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
         )}
         {!contact && <h1 className="text-2xl font-semibold">Loading...</h1>}
-        {deaconCareGroup && <div>{deaconCareGroup.title}</div>}
-        {contact && contact.phoneNumbers.length > 0 && (
-          <div>
-            Phone:{" "}
-            <span className="inline-flex flex-wrap gap-2">
-              {contact.local.map((phone) => (
-                <a href={`tel:${phone.replace(/[^\d]/g, "")}`} key={phone}>
-                  {phone}
-                </a>
-              ))}
-            </span>
-          </div>
-        )}
-        {contact && contact.emails.length > 0 && (
-          <div>
-            Email:{" "}
-            <span className="inline-flex flex-wrap gap-2">
-              {contact.emails.map((email) => (
-                <a href={`mailto:${email}`} key={email}>
-                  {email}
-                </a>
-              ))}
-            </span>
-          </div>
-        )}
         <fetcher.Form
           method="post"
           className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-md transition-shadow p-3 my-4 print:hidden"

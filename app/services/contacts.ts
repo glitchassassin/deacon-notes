@@ -1,4 +1,5 @@
 import { API_URL, authorizedApiFetch } from "./api";
+import { getTokenSync } from "./auth";
 
 export async function getContactLists() {
   return authorizedApiFetch(`${API_URL}/content/mailingList/filter`, {
@@ -324,4 +325,8 @@ export async function createNote(contact: string, body: string) {
     method: "POST",
     body: JSON.stringify({ data: { body } }),
   });
+}
+
+export function getContactAvatarUrl(contactId: string, width: number = 100) {
+  return `${API_URL}/get/avatar/contact/${contactId}?w=${width}&cacheBuster=0&forceRefresh=true&access_token=${getTokenSync()}`;
 }
