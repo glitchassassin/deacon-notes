@@ -306,7 +306,7 @@ export interface NoteDefinition {
 }
 
 export interface NoteResponse {
-  data: Record<string, any>;
+  data?: Record<string, any>;
   fullDefinition: NoteDefinition;
   created: string;
   author: {

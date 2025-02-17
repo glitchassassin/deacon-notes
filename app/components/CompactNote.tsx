@@ -19,14 +19,14 @@ function CompactNote({
     (field) => field.key === "connectionType"
   );
   const connectionType = connectionTypeField?.options?.find(
-    (option) => option.value === data.connectionType
+    (option) => option.value === data?.connectionType
   )?.name;
 
   const connectedField = fullDefinition.fields.find(
     (field) => field.key === "connected"
   );
   const connected =
-    connectedField?.options?.find((option) => option.value === data.connected)
+    connectedField?.options?.find((option) => option.value === data?.connected)
       ?.name === "Yes";
 
   const date = new Date(created).toLocaleDateString();
@@ -66,7 +66,7 @@ function CompactNote({
         {/* Note body or connection comments */}
         {isConnection ? (
           <div className="text-gray-800 dark:text-gray-200 break-words">
-            {data.comments || (
+            {data?.comments || (
               <span className="italic text-gray-500 dark:text-gray-400">
                 No comments
               </span>
@@ -75,7 +75,7 @@ function CompactNote({
         ) : (
           <div
             className="text-gray-800 dark:text-gray-200 break-words"
-            dangerouslySetInnerHTML={{ __html: data.body }}
+            dangerouslySetInnerHTML={{ __html: data?.body ?? "" }}
           />
         )}
       </div>
