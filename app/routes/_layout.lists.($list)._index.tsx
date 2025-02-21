@@ -4,11 +4,11 @@ import {
   getContactsListMetadata,
   groupContactsByFamily,
 } from "~/services/contacts";
-import type { Route } from "./+types/_layout.lists.($list)";
+import type { Route } from "./+types/_layout.lists.($list)._index";
 import { useEffect, useState } from "react";
 import { Family } from "~/components/Family";
 import { optimisticCache } from "~/services/cache";
-import { redirect } from "react-router";
+import { Link, redirect } from "react-router";
 import { getUser } from "~/services/auth";
 
 export async function clientLoader({ params }: Route.LoaderArgs) {
@@ -31,7 +31,7 @@ export function meta({ data }: Route.MetaArgs) {
   ];
 }
 
-export default function Dashboard({ loaderData }: Route.ComponentProps) {
+export default function Dashboard({ loaderData, params }: Route.ComponentProps) {
   const {
     title,
     contacts: { optimistic, fetched },
@@ -40,7 +40,6 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   const [contacts, setContacts] = useState(optimistic);
   const [sortBy, setSortBy] = useState<"familyName" | "updated">("familyName");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-  const [showCopied, setShowCopied] = useState(false);
 
   useEffect(() => {
     fetched.then(setContacts);
@@ -67,21 +66,6 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
       setSortDirection("asc");
     }
   };
-
-  const handleCopyEmails = () => {
-    if (!sortedContacts) return;
-    const emails = sortedContacts
-      .flatMap((family) => family.parents)
-      .flatMap((parent) => parent.emails)
-      .filter(Boolean)
-      .join(", ");
-    navigator.clipboard.writeText(emails).then(() => {
-      setShowCopied(true);
-      setTimeout(() => setShowCopied(false), 2000);
-    });
-  };
-
-  const user = getUser();
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
@@ -120,24 +104,12 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
               Print
             </button>
             {sortedContacts && (
-              <>
-                <a
-                  href={`mailto:${user?.email}?bcc=${sortedContacts
-                    .flatMap((family) => family.parents)
-                    .flatMap((parent) => parent.emails)
-                    .filter(Boolean)
-                    .join(",")}`}
-                  className="px-3 py-1 rounded text-sm md:text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                >
-                  Email All
-                </a>
-                <button
-                  onClick={handleCopyEmails}
-                  className="px-3 py-1 rounded text-sm md:text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 relative"
-                >
-                  {showCopied ? "Copied!" : "Copy Emails"}
-                </button>
-              </>
+              <Link
+                to={`/lists/${params.list}/email`}
+                className="px-3 py-1 rounded text-sm md:text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              >
+                Send Email
+              </Link>
             )}
           </div>
         </div>

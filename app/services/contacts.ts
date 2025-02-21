@@ -329,3 +329,106 @@ export async function createNote(contact: string, body: string) {
 export function getContactAvatarUrl(contactId: string, width: number = 100) {
   return `${API_URL}/get/avatar/contact/${contactId}?w=${width}&cacheBuster=0&forceRefresh=true&access_token=${getTokenSync()}`;
 }
+
+interface ConnectionData {
+  when: string;
+  connectionType: string;
+  connected: 'yes' | 'no';
+  comments: string;
+}
+
+interface ConnectionRealm {
+  _id: string;
+  title: string;
+  color?: string;
+  bgColor?: string;
+  status?: string;
+  basic?: boolean;
+  fullDefinition?: {
+    title: string;
+    plural: string;
+    definitionName: string;
+  };
+  depth?: number;
+  children?: any[];
+}
+
+interface ConnectionPayload {
+  data: ConnectionData;
+  realms: ConnectionRealm[];
+  parent: string;
+}
+
+export async function createConnection(contactId: string, payload: ConnectionPayload) {
+  return authorizedApiFetch(`${API_URL}/post/${contactId}/connection`, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  });
+}
+
+interface BulkEmailConnectionOptions {
+  contactListId: string;
+  comments: string;
+  when?: string;
+}
+
+async function createConnectionWithRetry(contact: Contact, payload: ConnectionPayload, retries = 3): Promise<void> {
+  try {
+    await createConnection(contact._id, payload);
+  } catch (error) {
+    if (retries > 0) {
+      await new Promise(resolve => setTimeout(resolve, 300));
+      return createConnectionWithRetry(contact, payload, retries - 1);
+    }
+    throw error;
+  }
+}
+
+async function processContactSet(contacts: Contact[], comments: string, when: string): Promise<void> {
+  for (const contact of contacts) {
+    const payload: ConnectionPayload = {
+      data: {
+        when,
+        connectionType: 'email',
+        connected: 'yes',
+        comments
+      },
+      realms: contact.realms,
+      parent: contact._id
+    };
+    
+    await createConnectionWithRetry(contact, payload);
+  }
+}
+
+export async function createBulkEmailConnections({
+  contactListId,
+  comments,
+  when = new Date().toISOString(),
+}: BulkEmailConnectionOptions) {
+  console.log("Creating bulk email connections for", contactListId, "with comments", comments);
+  
+  try {
+    // Get all contacts with emails
+    const contacts = (await getContactsList(contactListId)).filter(contact => contact.emails.length > 0);
+    
+    // Split contacts into 5 sets
+    const setSize = Math.ceil(contacts.length / 5);
+    const contactSets = Array.from({ length: 5 }, (_, i) => 
+      contacts.slice(i * setSize, (i + 1) * setSize)
+    ).filter(set => set.length > 0); // Remove empty sets
+    
+    // Process all sets in parallel
+    await Promise.all(
+      contactSets.map(set => processContactSet(set, comments, when))
+    );
+
+    return { success: true as const };
+  } catch (error) {
+    console.error('Failed to create connections:', error);
+    return { 
+      success: false as const, 
+      error: error instanceof Error ? error.message : "Failed to create connections" 
+    };
+  }
+}
