@@ -10,13 +10,13 @@ import type { Route } from "./+types/_layout.contacts.$contact";
 import { useFetcher } from "react-router";
 import { optimisticCache } from "~/services/cache";
 import { useEffect, useState } from "react";
+import * as Sentry from "@sentry/browser";
 
 export function meta({ data: { initialContact } }: Route.MetaArgs) {
   return [
     {
-      title: `${initialContact?.preferredName ?? initialContact?.firstName} ${
-        initialContact?.lastName
-      }`,
+      title: `${initialContact?.preferredName ?? initialContact?.firstName} ${initialContact?.lastName
+        }`,
     },
   ];
 }
@@ -35,7 +35,22 @@ export async function clientLoader({ params }: Route.LoaderArgs) {
 export async function clientAction({ request, params }: Route.ActionArgs) {
   const formData = await request.formData();
   const body = formData.get("body");
-  await createNote(params.contact, body as string);
+
+  try {
+    await createNote(params.contact, body as string);
+    return { success: true };
+  } catch (error) {
+    Sentry.captureException(error, {
+      extra: {
+        contactId: params.contact,
+        noteLength: body?.toString().length,
+      }
+    });
+    
+    return { 
+      error: "Failed to create note. Please try again." 
+    };
+  }
 }
 
 export default function Dashboard({ loaderData }: Route.ComponentProps) {
@@ -46,6 +61,8 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
 
   const [contact, setContact] = useState(optimisticContact);
   const [notes, setNotes] = useState(optimisticNotes);
+  const [currentNote, setCurrentNote] = useState("");
+  const [lastSubmittedNote, setLastSubmittedNote] = useState("");
 
   useEffect(() => {
     fetchedContact.then(setContact);
@@ -58,6 +75,43 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
 
   const fetcher = useFetcher();
   const isLoading = fetcher.state !== "idle";
+
+  useEffect(() => {
+    if (lastSubmittedNote && fetcher.state === "idle") {
+      if (fetcher.data?.error) {
+        setNotes(prev => (prev ?? []).filter(note => !note._id.startsWith('temp-')));
+        setCurrentNote(lastSubmittedNote);
+      } else if (!notes?.some(note => note.data?.body === lastSubmittedNote)) {
+        setCurrentNote(lastSubmittedNote);
+      }
+      setLastSubmittedNote("");
+    }
+  }, [fetcher.state, fetcher.data, notes, lastSubmittedNote]);
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    
+    setLastSubmittedNote(currentNote);
+    
+    setNotes(prev => [{
+      _id: 'temp-' + Date.now(),
+      data: { body: currentNote },
+      created: new Date().toISOString(),
+      author: {
+        name: 'Saving...'
+      },
+      fullDefinition: {
+        definitionName: 'note',
+        fields: [],
+        title: 'Note',
+        plural: 'Notes',
+      }
+    }, ...(prev ?? [])]);
+    
+    setCurrentNote("");
+    
+    fetcher.submit(event.currentTarget);
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
@@ -72,9 +126,8 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
               >
                 <img
                   src={getContactAvatarUrl(contact._id)}
-                  alt={`${contact?.preferredName ?? contact?.firstName} ${
-                    contact?.lastName
-                  }`}
+                  alt={`${contact?.preferredName ?? contact?.firstName} ${contact?.lastName
+                    }`}
                   className="w-32 h-32 rounded-full object-cover hover:opacity-90 transition-opacity"
                 />
               </a>
@@ -126,6 +179,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
         {!contact && <h1 className="text-2xl font-semibold">Loading...</h1>}
         <fetcher.Form
           method="post"
+          onSubmit={handleSubmit}
           className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-md transition-shadow p-3 my-4 print:hidden"
         >
           <div className="flex flex-col gap-3">
@@ -140,8 +194,18 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
                 name="body"
                 id="body"
                 rows={3}
-                className="w-full rounded-md border border-gray-300 dark:border-white/20 bg-white dark:bg-gray-900 px-3 py-2 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
+                disabled={isLoading}
+                value={currentNote}
+                className="w-full rounded-md border border-gray-300 dark:border-white/20 bg-white dark:bg-gray-900 px-3 py-2 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50"
+                onChange={(event) => {
+                  setCurrentNote(event.target.value);
+                }}
               />
+              {fetcher.data?.error && (
+                <div className="mt-1 text-red-600 text-sm">
+                  {fetcher.data.error}
+                </div>
+              )}
             </div>
 
             <button
