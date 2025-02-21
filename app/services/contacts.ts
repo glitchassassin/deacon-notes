@@ -81,13 +81,13 @@ export type Contact = {
   emails: string[];
   updated: string;
   _ss_householdID: string;
+  householdRole?: string;
   family?: {
     _id: string;
     title: string;
     items: {
       _id: string;
       title: string;
-      householdRole: string;
     }[];
   };
   realms: {
@@ -128,6 +128,7 @@ export async function filterContacts({
     "phoneNumbers",
     "emails",
     "realms",
+    "householdRole",
     "_ss_householdID",
     "_posts.all",
   ],
@@ -197,9 +198,7 @@ export function groupContactsByFamily(
         deaconCareGroup: undefined,
       });
       if (
-        contact.family?.items.find(
-          (item) => item._id === contact._id && item.householdRole === "child"
-        )
+        contact.householdRole === "child"
       ) {
         original.children.push(contact);
       } else {
