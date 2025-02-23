@@ -20,23 +20,32 @@ type Family = ReturnType<typeof groupContactsByFamily>[string];
 
 function FamilyContact({ contact }: { contact: Family["parents"][number] }) {
   return (
-    <>
-      <Link
-        to={`/contacts/${contact._id}`}
-        className="pl-4 hover:text-sky-600 dark:hover:text-sky-400 print:hidden"
-      >
-        {contact.preferredName ?? contact.firstName}&nbsp;{contact.lastName}
-      </Link>
-      <span className="hidden print:flex flex-row gap-2">
-        <span className="text-sm flex-[1]">
+    <div className="flex flex-col">
+      <div className="flex flex-row">
+        <Link
+          to={`/contacts/${contact._id}`}
+          className="pl-4 hover:text-sky-600 dark:hover:text-sky-400 print:hidden"
+        >
           {contact.preferredName ?? contact.firstName}&nbsp;{contact.lastName}
+        </Link>
+        <span className="hidden print:flex flex-row gap-2">
+          <span className="text-sm flex-[1]">
+            {contact.preferredName ?? contact.firstName}&nbsp;{contact.lastName}
+          </span>
+          <span className="text-sm flex-[2]">
+            {contact.phoneNumbers.map(formatPhoneNumber).join(", ")}
+          </span>
+          <span className="text-sm flex-[2]">{contact.emails.join(", ")}</span>
         </span>
-        <span className="text-sm flex-[2]">
-          {contact.phoneNumbers.map(formatPhoneNumber).join(", ")}
-        </span>
-        <span className="text-sm flex-[2]">{contact.emails.join(", ")}</span>
-      </span>
-    </>
+      </div>
+      {contact.notes && contact.notes.length > 0 && (
+        <div className="flex flex-col gap-2 pl-8 print:hidden">
+          {contact.notes.map((note) => (
+            <CompactNote key={note._id} note={note} />
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -46,7 +55,6 @@ interface FamilyProps {
     familyName: string;
     parents: Contact[];
     children: Contact[];
-    notes: NoteResponse[];
     updated?: string;
     deaconCareGroup?: string;
   };
@@ -79,16 +87,6 @@ export function Family({ family, showDeaconCareGroup }: FamilyProps) {
           </>
         )}
       </div>
-      {family.notes.length > 0 && (
-        <div className="flex flex-col gap-2 print:hidden">
-          <h3 className="pl-2 text-md font-semibold">Notes</h3>
-          {family.notes.map((note) => (
-            <span key={note._id} className="pl-4">
-              <CompactNote note={note} />
-            </span>
-          ))}
-        </div>
-      )}
     </div>
   );
 }

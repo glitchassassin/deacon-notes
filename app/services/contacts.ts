@@ -105,6 +105,7 @@ export type Contact = {
     }[];
   };
   _id: string;
+  notes?: NoteResponse[];
 };
 
 export async function filterContacts({
@@ -193,7 +194,6 @@ export function groupContactsByFamily(
         familyName: contact.family?.title ?? contact.lastName,
         parents: [],
         children: [],
-        notes: [],
         updated: contact._posts.all[0]?.updated,
         deaconCareGroup: undefined,
       });
@@ -220,7 +220,6 @@ export function groupContactsByFamily(
         familyName: string;
         parents: typeof contacts;
         children: typeof contacts;
-        notes: NoteResponse[];
         updated?: string;
         deaconCareGroup?: string;
       }
@@ -228,9 +227,6 @@ export function groupContactsByFamily(
   );
 }
 
-/**
- * Adds the three most recent notes for each contact to the family object
- */
 export async function enrichWithNotes(
   contacts: Awaited<ReturnType<typeof groupContactsByFamily>>
 ) {
@@ -243,7 +239,7 @@ export async function enrichWithNotes(
       if (contact._posts.all.length > 0) {
         promises.push(
           getNotes(contact._id).then((notes) => {
-            contacts[family].notes.push(...notes.slice(0, 3));
+            contact.notes = notes.slice(0, 3);
           })
         );
       }
