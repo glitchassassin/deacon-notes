@@ -34,7 +34,7 @@ export async function clientLoader({ request }: { request: Request }) {
 export function meta({ data }: { data: { query: string } }) {
   return [
     {
-      title: `Search: ${data.query}`,
+      title: `Search: ${data?.query}`,
     },
   ];
 }

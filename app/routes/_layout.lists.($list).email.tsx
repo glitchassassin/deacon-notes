@@ -23,7 +23,7 @@ export async function clientLoader({ params }: Route.LoaderArgs) {
 export function meta({ data }: Route.MetaArgs) {
   return [
     {
-      title: `${data.title}`,
+      title: `${data?.title}`,
     },
   ];
 }

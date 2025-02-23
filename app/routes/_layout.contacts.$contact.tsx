@@ -12,7 +12,8 @@ import { optimisticCache } from "~/services/cache";
 import { useEffect, useState } from "react";
 import * as Sentry from "@sentry/browser";
 
-export function meta({ data: { initialContact } }: Route.MetaArgs) {
+export function meta({ data }: Route.MetaArgs) {
+  const initialContact = data?.initialContact;
   return [
     {
       title: `${initialContact?.preferredName ?? initialContact?.firstName} ${initialContact?.lastName

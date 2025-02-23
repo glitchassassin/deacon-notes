@@ -9,7 +9,6 @@ import { useEffect, useState } from "react";
 import { Family } from "~/components/Family";
 import { optimisticCache } from "~/services/cache";
 import { Link, redirect } from "react-router";
-import { getUser } from "~/services/auth";
 
 export async function clientLoader({ params }: Route.LoaderArgs) {
   if (!params.list) {
@@ -26,7 +25,7 @@ export async function clientLoader({ params }: Route.LoaderArgs) {
 export function meta({ data }: Route.MetaArgs) {
   return [
     {
-      title: `${data.title}`,
+      title: `${data?.title}`,
     },
   ];
 }
