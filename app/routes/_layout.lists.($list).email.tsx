@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { useState, useEffect } from "react";
 import { createBulkEmailConnections, getContactsList, getContactsListMetadata } from "~/services/contacts";
 import type { Route } from "./+types/_layout.lists.($list).email";
@@ -13,7 +13,7 @@ export async function clientLoader({ params }: Route.LoaderArgs) {
   const { title, _realm } = await getContactsListMetadata(params.list);
 
   const emailAddresses = getContactsList(_realm).then(contacts => contacts
-        .filter(contact => contact.emails.length > 0)
+        .filter(contact => contact.householdRole === 'parent' && contact.emails.length > 0)
         .flatMap(contact => contact.emails)
     )
 
@@ -36,7 +36,6 @@ export default function SendEmail({ loaderData }: Route.ComponentProps) {
   const [copied, setCopied] = useState(false);
   const [emails, setEmails] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
   const params = useParams();
   const { title, _realm, emailAddresses } = loaderData;
   const user = getUser();
@@ -106,7 +105,7 @@ export default function SendEmail({ loaderData }: Route.ComponentProps) {
               ) : (
                 <>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                    Choose how you want to send your email:
+                    Choose how you want to send your email (list only includes parents with email addresses):
                   </p>
                   <div className="flex gap-3">
                     <a
