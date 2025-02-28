@@ -1,0 +1,6 @@
+---
+description: React Router framework rules
+globs: *.tsx
+alwaysApply: false
+---
+This site runs in SPA mode, so all data fetching should happen in a clientLoader function like [_layout.contacts.$contact.tsx](mdc:app/routes/_layout.contacts.$contact.tsx). Prefer to use forms in conjunction with a clientAction to execute changes with remote APIs.
