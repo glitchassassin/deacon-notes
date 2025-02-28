@@ -1,8 +1,8 @@
 import { Link } from "react-router";
+import type { Contact } from "~/services/contacts";
 import { groupContactsByFamily } from "~/services/contacts";
-import CompactNote from "./CompactNote";
 import { formatPhoneNumber } from "~/utils/format";
-import type { Contact, NoteResponse } from "~/services/contacts";
+import CompactNote from "./CompactNote";
 
 function lastPostActivity(
   posts: {
@@ -28,7 +28,7 @@ function FamilyContact({ contact }: { contact: Family["parents"][number] }) {
         >
           {contact.preferredName ?? contact.firstName}&nbsp;{contact.lastName}
         </Link>
-        <span className="hidden print:flex flex-row gap-2">
+        <span className="hidden print:flex flex-row gap-2 w-full">
           <span className="text-sm flex-[1]">
             {contact.preferredName ?? contact.firstName}&nbsp;{contact.lastName}
           </span>
@@ -63,9 +63,9 @@ interface FamilyProps {
 
 export function Family({ family, showDeaconCareGroup }: FamilyProps) {
   return (
-    <div className="flex flex-col gap-4 print:p-0 p-4 bg-white dark:bg-gray-800 rounded-lg print:shadow-none shadow-md transition-shadow text-gray-900 dark:text-gray-100">
+    <div className="flex flex-col gap-4 print:p-0 p-4 bg-white dark:bg-gray-800 rounded-lg print:shadow-none shadow-md transition-shadow text-gray-900 dark:text-gray-100 break-inside-avoid">
       <div className="flex flex-col">
-        <h2 className="text-lg font-semibold">
+        <h2 className="text-lg print:text-md font-semibold">
           {family.familyName} Family
           {showDeaconCareGroup && family.deaconCareGroup && (
             <span className="font-normal text-gray-500 dark:text-gray-400 ml-2">
@@ -78,7 +78,7 @@ export function Family({ family, showDeaconCareGroup }: FamilyProps) {
         ))}
         {family.children.length > 0 && (
           <>
-            <h3 className="pl-2 text-md font-semibold mt-4 print:pl-0 print:mt-2 print:text-sm">
+            <h3 className="pl-2 text-md font-semibold mt-4 print:text-sm print:pl-0 print:mt-2">
               Children
             </h3>
             {family.children.map((contact) => (
