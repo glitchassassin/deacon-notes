@@ -2,6 +2,7 @@ import "./services/sentry";
 import * as Sentry from "@sentry/react";
 import {
   isRouteErrorResponse,
+  Link,
   Links,
   Meta,
   Outlet,
@@ -12,6 +13,7 @@ import {
 
 import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
+import { SiteHeader } from "./components/SiteHeader";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -47,6 +49,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return <Outlet />;
+}
+
+export function HydrateFallback() {
+  return (
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+      <SiteHeader isLoading={true} />
+
+      <div className="h-24 md:h-16 mt-4 print:hidden"></div>
+      <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow p-4 text-gray-900 dark:text-gray-100">
+        Loading...
+      </div>
+    </div>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
