@@ -1,13 +1,13 @@
+import { Suspense, useState } from "react";
+import { Await, redirect } from "react-router";
+import { Button } from "~/components/Button";
+import { Family } from "~/components/Family";
+import type { Contact, NoteResponse } from "~/services/contacts";
 import {
   enrichWithNotes,
-  searchContacts,
   groupContactsByFamily,
+  searchContacts,
 } from "~/services/contacts";
-import { useState, Suspense } from "react";
-import { Family } from "~/components/Family";
-import { redirect, Await } from "react-router";
-import type { NoteResponse } from "~/services/contacts";
-import type { Contact } from "~/services/contacts";
 
 type FamilyGroup = {
   familyId: string;
@@ -78,36 +78,23 @@ function SearchResultsContent({
     <>
       <div className="flex gap-2 mb-4 print:hidden">
         <div className="flex gap-2">
-          <button
+          <Button
             onClick={() => toggleSort("familyName")}
-            className={`px-3 py-1 rounded text-sm md:text-base ${
-              sortBy === "familyName"
-                ? "bg-blue-500 text-white"
-                : "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-            }`}
+            variant={sortBy === "familyName" ? "primary" : "secondary"}
           >
             Family Name{" "}
             {sortBy === "familyName" && (sortDirection === "asc" ? "↑" : "↓")}
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => toggleSort("updated")}
-            className={`px-3 py-1 rounded text-sm md:text-base ${
-              sortBy === "updated"
-                ? "bg-blue-500 text-white"
-                : "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-            }`}
+            variant={sortBy === "updated" ? "primary" : "secondary"}
           >
             Last Updated{" "}
             {sortBy === "updated" && (sortDirection === "asc" ? "↑" : "↓")}
-          </button>
+          </Button>
         </div>
         <div className="flex-grow"></div>
-        <button
-          onClick={() => window.print()}
-          className="px-3 py-1 rounded text-sm md:text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-        >
-          Print
-        </button>
+        <Button onClick={() => window.print()}>Print</Button>
       </div>
       {sortedContacts.length === 0 ? (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow p-4 text-gray-900 dark:text-gray-100">

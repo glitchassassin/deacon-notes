@@ -1,3 +1,8 @@
+import { useEffect, useState } from "react";
+import { redirect } from "react-router";
+import { Button, LinkButton } from "~/components/Button";
+import { Family } from "~/components/Family";
+import { optimisticCache } from "~/services/cache";
 import {
   enrichWithNotes,
   getContactsList,
@@ -5,10 +10,6 @@ import {
   groupContactsByFamily,
 } from "~/services/contacts";
 import type { Route } from "./+types/_layout.lists.($list)._index";
-import { useEffect, useState } from "react";
-import { Family } from "~/components/Family";
-import { optimisticCache } from "~/services/cache";
-import { Link, redirect } from "react-router";
 
 export async function clientLoader({ params }: Route.LoaderArgs) {
   if (!params.list) {
@@ -30,7 +31,10 @@ export function meta({ data }: Route.MetaArgs) {
   ];
 }
 
-export default function Dashboard({ loaderData, params }: Route.ComponentProps) {
+export default function Dashboard({
+  loaderData,
+  params,
+}: Route.ComponentProps) {
   const {
     title,
     contacts: { optimistic, fetched },
@@ -72,43 +76,27 @@ export default function Dashboard({ loaderData, params }: Route.ComponentProps) 
         <h1 className="text-2xl font-bold mb-4">{title}</h1>
         <div className="flex flex-wrap gap-4 mb-4 justify-between print:hidden">
           <div className="flex gap-2 order-2 sm:order-1">
-            <button
+            <Button
               onClick={() => toggleSort("familyName")}
-              className={`px-3 py-1 rounded text-sm md:text-base ${
-                sortBy === "familyName"
-                  ? "bg-blue-500 text-white"
-                  : "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-              }`}
+              variant={sortBy === "familyName" ? "primary" : "secondary"}
             >
               Family Name{" "}
               {sortBy === "familyName" && (sortDirection === "asc" ? "↑" : "↓")}
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => toggleSort("updated")}
-              className={`px-3 py-1 rounded text-sm md:text-base ${
-                sortBy === "updated"
-                  ? "bg-blue-500 text-white"
-                  : "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-              }`}
+              variant={sortBy === "updated" ? "primary" : "secondary"}
             >
               Last Updated{" "}
               {sortBy === "updated" && (sortDirection === "asc" ? "↑" : "↓")}
-            </button>
+            </Button>
           </div>
           <div className="flex gap-2 w-full sm:w-auto order-1 sm:order-2 justify-end">
-            <button
-              onClick={() => window.print()}
-              className="px-3 py-1 rounded text-sm md:text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-            >
-              Print
-            </button>
+            <Button onClick={() => window.print()}>Print</Button>
             {sortedContacts && (
-              <Link
-                to={`/lists/${params.list}/email`}
-                className="px-3 py-1 rounded text-sm md:text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-              >
+              <LinkButton to={`/lists/${params.list}/email`}>
                 Send Email
-              </Link>
+              </LinkButton>
             )}
           </div>
         </div>
