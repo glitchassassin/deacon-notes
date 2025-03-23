@@ -1,29 +1,21 @@
 import { useEffect, useState } from "react";
-import { redirect } from "react-router";
 import { Button, LinkButton } from "~/components/Button";
 import { Family } from "~/components/Family";
-import { optimisticCache } from "~/services/cache";
-import {
-  enrichWithNotes,
-  getContactsList,
-  getContactsListMetadata,
-  groupContactsByFamily,
-} from "~/services/contacts";
-import type { Route } from "./+types/_layout.lists.($list)._index";
+import { matchById } from "~/utils/matchById";
+import { Route } from "./+types/_layout.lists.($list)._index";
 
-export async function clientLoader({ params }: Route.LoaderArgs) {
-  if (!params.list) {
-    throw redirect("/");
+// Define the parent route ID for useRouteLoaderData
+const PARENT_ROUTE_ID = "routes/_layout.lists.($list)";
+
+export function meta({ matches }: Partial<Route.MetaArgs>) {
+  if (!matches) {
+    return [
+      {
+        title: "Deacon Notes",
+      },
+    ];
   }
-  const { title, _realm } = await getContactsListMetadata(params.list);
-
-  const contacts = optimisticCache(`contacts-list-${_realm}`, () =>
-    getContactsList(_realm).then(groupContactsByFamily).then(enrichWithNotes)
-  ); // Defer promise
-  return { title, contacts };
-}
-
-export function meta({ data }: Route.MetaArgs) {
+  const data = matchById(matches, PARENT_ROUTE_ID).data;
   return [
     {
       title: `${data?.title}`,
@@ -31,10 +23,13 @@ export function meta({ data }: Route.MetaArgs) {
   ];
 }
 
-export default function Dashboard({
-  loaderData,
-  params,
-}: Route.ComponentProps) {
+export default function Dashboard({ params, matches }: Route.ComponentProps) {
+  const loaderData = matchById(matches, PARENT_ROUTE_ID).data;
+
+  if (!loaderData) {
+    return <div>Loading...</div>;
+  }
+
   const {
     title,
     contacts: { optimistic, fetched },

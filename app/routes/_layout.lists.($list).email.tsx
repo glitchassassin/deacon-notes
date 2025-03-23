@@ -1,26 +1,23 @@
-import { Link, useParams } from "react-router";
-import { useState, useEffect } from "react";
-import { createBulkEmailConnections, getContactsList, getContactsListMetadata } from "~/services/contacts";
-import type { Route } from "./+types/_layout.lists.($list).email";
-import { redirect } from "react-router";
+import { useEffect, useState } from "react";
+import { Link, useParams, useRouteLoaderData } from "react-router";
 import { getUser } from "~/services/auth";
+import { createBulkEmailConnections } from "~/services/contacts";
+import { matchById } from "~/utils/matchById";
+import { Route } from "./+types/_layout.lists.($list).email";
+import type { LoaderData } from "./_layout.lists.($list)";
 
-export async function clientLoader({ params }: Route.LoaderArgs) {
-  if (!params.list) {
-    throw redirect("/");
+// Define the parent route ID for useRouteLoaderData
+const PARENT_ROUTE_ID = "routes/_layout.lists.($list)";
+
+export function meta({ matches }: Partial<Route.MetaArgs>) {
+  if (!matches) {
+    return [
+      {
+        title: "Deacon Notes",
+      },
+    ];
   }
-
-  const { title, _realm } = await getContactsListMetadata(params.list);
-
-  const emailAddresses = getContactsList(_realm).then(contacts => contacts
-        .filter(contact => contact.householdRole === 'parent' && contact.emails.length > 0)
-        .flatMap(contact => contact.emails)
-    )
-
-  return { title, _realm, emailAddresses };
-}
-
-export function meta({ data }: Route.MetaArgs) {
+  const data = matchById(matches, PARENT_ROUTE_ID).data;
   return [
     {
       title: `${data?.title}`,
@@ -28,20 +25,30 @@ export function meta({ data }: Route.MetaArgs) {
   ];
 }
 
-export default function SendEmail({ loaderData }: Route.ComponentProps) {
+export default function SendEmail() {
+  const params = useParams();
+  const loaderData = useRouteLoaderData<LoaderData>(PARENT_ROUTE_ID);
+
+  if (!loaderData) {
+    return <div>Loading...</div>;
+  }
+
+  const { title, _realm, emailAddresses } = loaderData;
+
   const [showConnectionNote, setShowConnectionNote] = useState(false);
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
-  const [sendResult, setSendResult] = useState<{ success: boolean; error?: string } | null>(null);
+  const [sendResult, setSendResult] = useState<{
+    success: boolean;
+    error?: string;
+  } | null>(null);
   const [copied, setCopied] = useState(false);
   const [emails, setEmails] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  const params = useParams();
-  const { title, _realm, emailAddresses } = loaderData;
   const user = getUser();
 
   useEffect(() => {
-    emailAddresses.then(emails => {
+    emailAddresses.then((emails) => {
       setEmails(emails);
       setLoading(false);
     });
@@ -64,9 +71,12 @@ export default function SendEmail({ loaderData }: Route.ComponentProps) {
         contactListId: _realm,
         comments: message,
       });
-      setSendResult({ success: result.success, error: 'error' in result ? result.error : undefined });
+      setSendResult({
+        success: result.success,
+        error: "error" in result ? result.error : undefined,
+      });
     } catch (error) {
-      setSendResult({ success: false, error: 'An unexpected error occurred' });
+      setSendResult({ success: false, error: "An unexpected error occurred" });
     } finally {
       setSending(false);
     }
@@ -105,7 +115,8 @@ export default function SendEmail({ loaderData }: Route.ComponentProps) {
               ) : (
                 <>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                    Choose how you want to send your email (list only includes parents with email addresses):
+                    Choose how you want to send your email (list only includes
+                    parents with email addresses):
                   </p>
                   <div className="flex gap-3">
                     <a
@@ -157,13 +168,15 @@ export default function SendEmail({ loaderData }: Route.ComponentProps) {
                   </div>
 
                   {sendResult && (
-                    <div className={`p-4 rounded-md ${
-                      sendResult.success 
-                        ? 'bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-200' 
-                        : 'bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-200'
-                    }`}>
-                      {sendResult.success 
-                        ? 'Successfully recorded email connections!' 
+                    <div
+                      className={`p-4 rounded-md ${
+                        sendResult.success
+                          ? "bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-200"
+                          : "bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-200"
+                      }`}
+                    >
+                      {sendResult.success
+                        ? "Successfully recorded email connections!"
                         : `Failed to record connections: ${sendResult.error}`}
                     </div>
                   )}
@@ -202,4 +215,4 @@ export default function SendEmail({ loaderData }: Route.ComponentProps) {
       </main>
     </div>
   );
-} 
+}
