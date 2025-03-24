@@ -6,29 +6,9 @@ import {
   getContactsListMetadata,
   groupContactsByFamily,
 } from "~/services/contacts";
+import { Route } from "./+types/_layout.lists.($list)";
 
-// Define the route type
-export type RouteId = "routes/_layout.lists.($list)";
-
-// Define loader args type
-interface LoaderArgs {
-  params: {
-    list?: string;
-  };
-}
-
-// Define loader data type
-export interface LoaderData {
-  title: string;
-  _realm: string;
-  contacts: {
-    optimistic: Record<string, any> | null;
-    fetched: Promise<Record<string, any>>;
-  };
-  emailAddresses: Promise<string[]>;
-}
-
-export async function clientLoader({ params }: LoaderArgs) {
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   if (!params.list) {
     throw redirect("/");
   }
@@ -58,12 +38,7 @@ export async function clientLoader({ params }: LoaderArgs) {
   };
 }
 
-// Define meta args type
-interface MetaArgs {
-  data?: LoaderData;
-}
-
-export function meta({ data }: MetaArgs) {
+export function meta({ data }: Partial<Route.MetaArgs>) {
   return [
     {
       title: `${data?.title}`,

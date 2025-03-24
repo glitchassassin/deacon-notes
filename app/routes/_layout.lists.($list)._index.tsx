@@ -87,7 +87,9 @@ export default function Dashboard({ params, matches }: Route.ComponentProps) {
             </Button>
           </div>
           <div className="flex gap-2 w-full sm:w-auto order-1 sm:order-2 justify-end">
-            <Button onClick={() => window.print()}>Print</Button>
+            <LinkButton to={`/lists/${params.list}/print/spreadsheet`}>
+              Print...
+            </LinkButton>
             {sortedContacts && (
               <LinkButton to={`/lists/${params.list}/email`}>
                 Send Email

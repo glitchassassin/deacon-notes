@@ -1,8 +1,6 @@
-import "./services/sentry";
 import * as Sentry from "@sentry/react";
 import {
   isRouteErrorResponse,
-  Link,
   Links,
   Meta,
   Outlet,
@@ -10,6 +8,7 @@ import {
   ScrollRestoration,
   useNavigate,
 } from "react-router";
+import "./services/sentry";
 
 import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
@@ -31,7 +30,7 @@ export const links: Route.LinksFunction = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="bg-gray-100 dark:bg-gray-900">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
