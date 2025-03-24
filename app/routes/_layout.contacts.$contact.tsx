@@ -1,23 +1,24 @@
+import * as Sentry from "@sentry/browser";
+import { useEffect, useState } from "react";
+import { useFetcher } from "react-router";
 import CompactNote from "~/components/CompactNote";
 import ExternalLink from "~/icons/ExternalLink";
+import { optimisticCache } from "~/services/cache";
 import {
   createNote,
   getContact,
-  getNotes,
   getContactAvatarUrl,
+  getNotes,
 } from "~/services/contacts";
 import type { Route } from "./+types/_layout.contacts.$contact";
-import { useFetcher } from "react-router";
-import { optimisticCache } from "~/services/cache";
-import { useEffect, useState } from "react";
-import * as Sentry from "@sentry/browser";
 
 export function meta({ data }: Route.MetaArgs) {
   const initialContact = data?.initialContact;
   return [
     {
-      title: `${initialContact?.preferredName ?? initialContact?.firstName} ${initialContact?.lastName
-        }`,
+      title: `${initialContact?.preferredName ?? initialContact?.firstName} ${
+        initialContact?.lastName
+      }`,
     },
   ];
 }
@@ -45,11 +46,11 @@ export async function clientAction({ request, params }: Route.ActionArgs) {
       extra: {
         contactId: params.contact,
         noteLength: body?.toString().length,
-      }
+      },
     });
-    
-    return { 
-      error: "Failed to create note. Please try again." 
+
+    return {
+      error: "Failed to create note. Please try again.",
     };
   }
 }
@@ -80,9 +81,13 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   useEffect(() => {
     if (lastSubmittedNote && fetcher.state === "idle") {
       if (fetcher.data?.error) {
-        setNotes(prev => (prev ?? []).filter(note => !note._id.startsWith('temp-')));
+        setNotes((prev) =>
+          (prev ?? []).filter((note) => !note._id.startsWith("temp-"))
+        );
         setCurrentNote(lastSubmittedNote);
-      } else if (!notes?.some(note => note.data?.body === lastSubmittedNote)) {
+      } else if (
+        !notes?.some((note) => note.data?.body === lastSubmittedNote)
+      ) {
         setCurrentNote(lastSubmittedNote);
       }
       setLastSubmittedNote("");
@@ -91,26 +96,29 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    
+
     setLastSubmittedNote(currentNote);
-    
-    setNotes(prev => [{
-      _id: 'temp-' + Date.now(),
-      data: { body: currentNote },
-      created: new Date().toISOString(),
-      author: {
-        name: 'Saving...'
+
+    setNotes((prev) => [
+      {
+        _id: "temp-" + Date.now(),
+        data: { body: currentNote },
+        created: new Date().toISOString(),
+        author: {
+          name: "Saving...",
+        },
+        fullDefinition: {
+          definitionName: "note",
+          fields: [],
+          title: "Note",
+          plural: "Notes",
+        },
       },
-      fullDefinition: {
-        definitionName: 'note',
-        fields: [],
-        title: 'Note',
-        plural: 'Notes',
-      }
-    }, ...(prev ?? [])]);
-    
+      ...(prev ?? []),
+    ]);
+
     setCurrentNote("");
-    
+
     fetcher.submit(event.currentTarget);
   };
 
@@ -127,8 +135,9 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
               >
                 <img
                   src={getContactAvatarUrl(contact._id)}
-                  alt={`${contact?.preferredName ?? contact?.firstName} ${contact?.lastName
-                    }`}
+                  alt={`${contact?.preferredName ?? contact?.firstName} ${
+                    contact?.lastName
+                  }`}
                   className="w-32 h-32 rounded-full object-cover hover:opacity-90 transition-opacity"
                 />
               </a>
@@ -174,6 +183,31 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
                   </span>
                 </div>
               )}
+              {contact.family?.address &&
+                Object.values(contact.family.address).some(
+                  (value) => value
+                ) && (
+                  <div>
+                    Address:{" "}
+                    <div className="inline-flex flex-col">
+                      {contact.family.address.addressLine1 && (
+                        <span>{contact.family.address.addressLine1}</span>
+                      )}
+                      {contact.family.address.addressLine2 && (
+                        <span>{contact.family.address.addressLine2}</span>
+                      )}
+                      <span>
+                        {[
+                          contact.family.address.suburb,
+                          contact.family.address.state,
+                          contact.family.address.postalCode,
+                        ]
+                          .filter(Boolean)
+                          .join(", ")}
+                      </span>
+                    </div>
+                  </div>
+                )}
             </div>
           </div>
         )}
