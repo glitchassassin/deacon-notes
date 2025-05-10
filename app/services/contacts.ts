@@ -1,35 +1,40 @@
 import { API_URL, authorizedApiFetch } from "./api";
-import { getTokenSync } from "./auth";
+import { getTokenSync, getUserRole } from "./auth";
 
 export async function getContactLists() {
+  const userRole = getUserRole();
+  
+  // Default filter configuration
+  const requestBody = {
+    sort: { sortKey: "title", sortDirection: "asc", sortType: "string" },
+    filter: {
+      operator: "and",
+      filters: [
+        {
+          operator: "and",
+          filters: [
+            { key: "status", comparator: "in", values: ["active", "draft"] },
+          ],
+        },
+        {
+          operator: "and",
+          filters: [
+            { key: "definition", comparator: "==", value: "mailingList" },
+          ],
+        },
+      ],
+    },
+    search: userRole === "Deacon" ? "Deacon Care Group" : "", // Only filter for Deacons
+    includeArchived: false,
+    allDefinitions: false,
+    searchInheritable: false,
+    includeUnmatched: true,
+    limit: 50,
+    timezone: "America/New_York",
+  };
+
   return authorizedApiFetch(`${API_URL}/content/mailingList/filter`, {
-    body: JSON.stringify({
-      sort: { sortKey: "title", sortDirection: "asc", sortType: "string" },
-      filter: {
-        operator: "and",
-        filters: [
-          {
-            operator: "and",
-            filters: [
-              { key: "status", comparator: "in", values: ["active", "draft"] },
-            ],
-          },
-          {
-            operator: "and",
-            filters: [
-              { key: "definition", comparator: "==", value: "mailingList" },
-            ],
-          },
-        ],
-      },
-      search: "Deacon Care Group",
-      includeArchived: false,
-      allDefinitions: false,
-      searchInheritable: false,
-      includeUnmatched: true,
-      limit: 50,
-      timezone: "America/New_York",
-    }),
+    body: JSON.stringify(requestBody),
   }) as Promise<
     {
       _id: string;

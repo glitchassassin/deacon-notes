@@ -1,5 +1,5 @@
 import { Link, Outlet, redirect, useNavigation } from "react-router";
-import { getUser } from "~/services/auth";
+import { getUser, hasSelectedRole } from "~/services/auth";
 import type { Route } from "./+types/_layout";
 import { SiteHeader } from "~/components/SiteHeader";
 
@@ -8,6 +8,18 @@ export async function clientLoader({ request }: Route.LoaderArgs) {
   if (!user && request.url !== "/login") {
     throw redirect("/login");
   }
+  
+  // If user is logged in but hasn't selected a role, redirect to settings
+  // Skip this check for login, logout, and settings routes
+  const url = new URL(request.url);
+  const isExemptRoute = url.pathname === "/login" || 
+                        url.pathname === "/logout" || 
+                        url.pathname.startsWith("/settings");
+                        
+  if (user && !hasSelectedRole() && !isExemptRoute) {
+    throw redirect("/settings");
+  }
+  
   return { user };
 }
 
