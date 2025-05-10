@@ -55,7 +55,19 @@ export async function login(username: string, password: string) {
 }
 
 export function logout() {
-  localStorage.clear(); // remove auth data as well as cached user data
+  // Save user roles before clearing localStorage
+  const user = getUser();
+  const roleKey = user ? `${LOCAL_STORAGE_ROLE_KEY_PREFIX}${user._id}` : null;
+  const userRole = roleKey ? localStorage.getItem(roleKey) : null;
+  
+  // Clear all localStorage items
+  localStorage.clear();
+  
+  // Restore user role if it was set
+  if (roleKey && userRole) {
+    localStorage.setItem(roleKey, userRole);
+  }
+  
   return redirect("/login");
 }
 
