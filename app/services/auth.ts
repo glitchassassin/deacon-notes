@@ -4,6 +4,7 @@ const API_URL = "https://api.fluro.io";
 const LOCAL_STORAGE_USER_KEY = "fluroUser";
 const LOCAL_STORAGE_TOKEN_KEY = "fluroToken";
 const LOCAL_STORAGE_TOKEN_EXPIRATION_KEY = "fluroTokenExpiration";
+const LOCAL_STORAGE_ROLE_KEY_PREFIX = "fluroUserRole_";
 
 type LoginResponse = {
   _id: string;
@@ -111,4 +112,28 @@ export async function refreshToken() {
   } catch (error) {
     throw logout();
   }
+}
+
+export type UserRole = "Deacon" | "Pastoral Staff";
+
+export function getUserRole(): UserRole | null {
+  const user = getUser();
+  if (!user) return null;
+  
+  const roleKey = `${LOCAL_STORAGE_ROLE_KEY_PREFIX}${user._id}`;
+  const storedRole = localStorage.getItem(roleKey);
+  
+  return storedRole as UserRole | null;
+}
+
+export function setUserRole(role: UserRole): void {
+  const user = getUser();
+  if (!user) return;
+  
+  const roleKey = `${LOCAL_STORAGE_ROLE_KEY_PREFIX}${user._id}`;
+  localStorage.setItem(roleKey, role);
+}
+
+export function hasSelectedRole(): boolean {
+  return getUserRole() !== null;
 }

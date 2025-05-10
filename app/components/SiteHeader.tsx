@@ -1,7 +1,7 @@
 import { Link, useNavigation } from "react-router";
 import { getUser } from "~/services/auth";
-import { LogoutButton } from "./LogoutButton";
 import { SearchInput } from "./SearchInput";
+import { UserMenu } from "./UserMenu";
 
 // Use the return type of getUser() for the user prop
 type User = ReturnType<typeof getUser>;
@@ -29,14 +29,14 @@ export function SiteHeader({
               Deacon Notes
             </Link>
             <div className="md:hidden">
-              <LogoutButton user={user} />
+              <UserMenu user={user} />
             </div>
           </div>
           <div className="flex-grow">
             <SearchInput disabled={!user} />
           </div>
           <div className="hidden md:block">
-            <LogoutButton user={user} />
+            <UserMenu user={user} />
           </div>
         </div>
       </div>
