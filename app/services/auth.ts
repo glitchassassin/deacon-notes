@@ -4,7 +4,7 @@ const API_URL = "https://api.fluro.io";
 const LOCAL_STORAGE_USER_KEY = "fluroUser";
 const LOCAL_STORAGE_TOKEN_KEY = "fluroToken";
 const LOCAL_STORAGE_TOKEN_EXPIRATION_KEY = "fluroTokenExpiration";
-const LOCAL_STORAGE_ROLE_KEY_PREFIX = "fluroUserRole_";
+const LOCAL_STORAGE_ROLE_KEY = "fluroUserRole";
 
 type LoginResponse = {
   _id: string;
@@ -55,17 +55,15 @@ export async function login(username: string, password: string) {
 }
 
 export function logout() {
-  // Save user roles before clearing localStorage
-  const user = getUser();
-  const roleKey = user ? `${LOCAL_STORAGE_ROLE_KEY_PREFIX}${user._id}` : null;
-  const userRole = roleKey ? localStorage.getItem(roleKey) : null;
+  // Save user role data before clearing localStorage
+  const roleData = localStorage.getItem(LOCAL_STORAGE_ROLE_KEY);
   
   // Clear all localStorage items
   localStorage.clear();
   
-  // Restore user role if it was set
-  if (roleKey && userRole) {
-    localStorage.setItem(roleKey, userRole);
+  // Restore user role data if it was set
+  if (roleData) {
+    localStorage.setItem(LOCAL_STORAGE_ROLE_KEY, roleData);
   }
   
   return redirect("/login");
@@ -128,22 +126,44 @@ export async function refreshToken() {
 
 export type UserRole = "Deacon" | "Pastoral Staff";
 
+interface UserRoleData {
+  userId: string;
+  role: UserRole;
+}
+
 export function getUserRole(): UserRole | null {
   const user = getUser();
   if (!user) return null;
   
-  const roleKey = `${LOCAL_STORAGE_ROLE_KEY_PREFIX}${user._id}`;
-  const storedRole = localStorage.getItem(roleKey);
+  const storedRoleData = localStorage.getItem(LOCAL_STORAGE_ROLE_KEY);
+  if (!storedRoleData) return null;
   
-  return storedRole as UserRole | null;
+  try {
+    const roleData = JSON.parse(storedRoleData) as UserRoleData;
+    
+    // Only return the role if it belongs to the current user
+    if (roleData.userId === user._id) {
+      return roleData.role;
+    }
+    
+    return null;
+  } catch (e) {
+    // If there's an error parsing the JSON, clear the invalid data
+    localStorage.removeItem(LOCAL_STORAGE_ROLE_KEY);
+    return null;
+  }
 }
 
 export function setUserRole(role: UserRole): void {
   const user = getUser();
   if (!user) return;
   
-  const roleKey = `${LOCAL_STORAGE_ROLE_KEY_PREFIX}${user._id}`;
-  localStorage.setItem(roleKey, role);
+  const roleData: UserRoleData = {
+    userId: user._id,
+    role
+  };
+  
+  localStorage.setItem(LOCAL_STORAGE_ROLE_KEY, JSON.stringify(roleData));
 }
 
 export function hasSelectedRole(): boolean {
