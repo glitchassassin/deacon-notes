@@ -1,10 +1,10 @@
 import { Outlet, redirect, useLocation } from "react-router";
 import { Button, LinkButton } from "~/components/Button";
 import { matchById } from "~/utils/matchById";
-import type { Route } from "./+types/_layout.lists.($list).print";
+import type { Route } from "./+types/_layout.$listsOrQueries.($list).print";
 
 // Define the parent route ID for useRouteLoaderData
-const PARENT_ROUTE_ID = "routes/_layout.lists.($list)";
+const PARENT_ROUTE_ID = "routes/_layout.$listsOrQueries.($list)";
 
 export async function clientLoader({ request }: Route.ClientLoaderArgs) {
   const url = new URL(request.url);
