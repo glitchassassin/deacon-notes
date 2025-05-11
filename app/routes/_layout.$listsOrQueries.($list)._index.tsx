@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { Button, LinkButton } from "~/components/Button";
 import { Family } from "~/components/Family";
 import { matchById } from "~/utils/matchById";
-import { Route } from "./+types/_layout.lists.($list)._index";
+import { Route } from "./+types/_layout.$listsOrQueries.($list)._index";
 
 // Define the parent route ID for useRouteLoaderData
-const PARENT_ROUTE_ID = "routes/_layout.lists.($list)";
+const PARENT_ROUTE_ID = "routes/_layout.$listsOrQueries.($list)";
 
 export function meta({ matches }: Partial<Route.MetaArgs>) {
   if (!matches) {

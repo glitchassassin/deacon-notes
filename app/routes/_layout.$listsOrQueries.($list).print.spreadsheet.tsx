@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { matchById } from "~/utils/matchById";
-import type { Route } from "./+types/_layout.lists.($list).print.spreadsheet";
+import type { Route } from "./+types/_layout.$listsOrQueries.($list).print.spreadsheet";
 
 // Define the parent route ID for useRouteLoaderData
-const PARENT_ROUTE_ID = "routes/_layout.lists.($list)";
+const PARENT_ROUTE_ID = "routes/_layout.$listsOrQueries.($list)";
 
 export function meta({ matches }: Partial<Route.MetaArgs>) {
   if (!matches) {
