@@ -3,11 +3,11 @@ import { Link, useParams, useRouteLoaderData } from "react-router";
 import { getUser } from "~/services/auth";
 import { createBulkEmailConnections } from "~/services/contacts";
 import { matchById } from "~/utils/matchById";
-import { Route } from "./+types/_layout.lists.($list).email";
-import type { LoaderData } from "./_layout.lists.($list)";
+import { type Info as ParentInfo } from "./+types/_layout.$listsOrQueries.($list)";
+import { Route } from "./+types/_layout.$listsOrQueries.($list).email";
 
 // Define the parent route ID for useRouteLoaderData
-const PARENT_ROUTE_ID = "routes/_layout.lists.($list)";
+const PARENT_ROUTE_ID = "routes/_layout.$listsOrQueries.($list)";
 
 export function meta({ matches }: Partial<Route.MetaArgs>) {
   if (!matches) {
@@ -27,7 +27,8 @@ export function meta({ matches }: Partial<Route.MetaArgs>) {
 
 export default function SendEmail() {
   const params = useParams();
-  const loaderData = useRouteLoaderData<LoaderData>(PARENT_ROUTE_ID);
+  const loaderData =
+    useRouteLoaderData<ParentInfo["loaderData"]>(PARENT_ROUTE_ID);
 
   if (!loaderData) {
     return <div>Loading...</div>;

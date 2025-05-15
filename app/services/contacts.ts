@@ -2,8 +2,6 @@ import { API_URL, authorizedApiFetch } from "./api";
 import { getTokenSync, getUserRole } from "./auth";
 
 export async function getContactLists() {
-  const userRole = getUserRole();
-  
   // Default filter configuration
   const requestBody = {
     sort: { sortKey: "title", sortDirection: "asc", sortType: "string" },
@@ -24,7 +22,6 @@ export async function getContactLists() {
         },
       ],
     },
-    search: userRole === "Deacon" ? "Deacon Care Group" : "", // Only filter for Deacons
     includeArchived: false,
     allDefinitions: false,
     searchInheritable: false,
@@ -61,6 +58,60 @@ export async function getContactsListMetadata(contactList: string) {
   return results;
 }
 
+export async function getContactsQueryMetadata(contactList: string) {
+  const results = (await authorizedApiFetch(
+    `${API_URL}/content/get/${contactList}?type=query`,
+    {
+      method: "GET",
+    }
+  )) as {
+    title: string;
+    _id: string;
+    _realm: string;
+    filterConfiguration: {
+      operator: string;
+      filters: Array<{
+        operator: string;
+        filters: Array<{
+          key: string;
+          comparator: string;
+          values: string[];
+          guid: string;
+          title: string;
+          value: string | null;
+          value2: string | null;
+        }>;
+        guid: string;
+      }>;
+    };
+    filterSearch: string;
+    filterSort: {
+      sortKey: string;
+      sortDirection: "asc" | "desc";
+      sortType: string;
+    };
+  };
+
+  return results;
+}
+
+type FilterJoin = {
+  operator: string;
+  filters: Array<Filter>;
+  guid?: string;
+};
+type FilterCriteria = {
+  key: string;
+  comparator: string;
+  values: string[];
+  guid: string;
+  title: string;
+  value: string | null;
+  value2: string | null;
+  dataType?: string;
+};
+type Filter = FilterJoin | FilterCriteria;
+
 interface ContactFilterOptions {
   sort?: {
     sortKey: string;
@@ -69,6 +120,7 @@ interface ContactFilterOptions {
   };
   search?: string;
   contactList?: string;
+  filter?: Filter;
   includeArchived?: boolean;
   allDefinitions?: boolean;
   searchInheritable?: boolean;
@@ -85,6 +137,7 @@ export type Contact = {
   phoneNumbers: string[];
   emails: string[];
   updated: string;
+  created: string;
   _ss_householdID: string;
   householdRole?: string;
   family?: {
@@ -129,6 +182,10 @@ export async function filterContacts({
   },
   search = "",
   contactList,
+  filter = {
+    operator: "and",
+    filters: [],
+  },
   includeArchived = false,
   allDefinitions = true,
   searchInheritable = false,
@@ -139,6 +196,7 @@ export async function filterContacts({
     "lastName",
     "preferredName",
     "updated",
+    "created",
     "phoneNumbers",
     "emails",
     "realms",
@@ -148,35 +206,36 @@ export async function filterContacts({
   ],
   timezone = "America/New_York",
 }: ContactFilterOptions = {}) {
-  const filters: any[] = [];
-
   if (contactList) {
-    filters.push({
+    filter = {
       operator: "and",
       filters: [
+        filter,
         {
-          key: "realms|mailingList",
-          comparator: "==",
-          values: [],
-          guid: "1938a4c9-526c-4000-8760-479f0bdc9000",
-          title: "Contact List",
-          value: contactList,
-          value2: null,
-          dataType: "reference",
+          operator: "and",
+          filters: [
+            {
+              key: "realms|mailingList",
+              comparator: "==",
+              values: [],
+              guid: "1938a4c9-526c-4000-8760-479f0bdc9000",
+              title: "Contact List",
+              value: contactList,
+              value2: null,
+              dataType: "reference",
+            },
+          ],
+          guid: "1938a4c9-5210-4000-89ce-6cdab2b93000",
         },
       ],
-      guid: "1938a4c9-5210-4000-89ce-6cdab2b93000",
-    });
+    };
   }
 
   return authorizedApiFetch(`${API_URL}/content/contact/filter`, {
     method: "POST",
     body: JSON.stringify({
       sort,
-      filter: {
-        operator: "and",
-        filters,
-      },
+      filter,
       search,
       includeArchived,
       allDefinitions,
@@ -187,6 +246,17 @@ export async function filterContacts({
       timezone,
     }),
   }) as Promise<Exclude<Contact, "local">[]>;
+}
+
+export async function getContactsQuery(
+  metadata: Awaited<ReturnType<typeof getContactsQueryMetadata>>
+) {
+  const contacts = await filterContacts({
+    filter: metadata.filterConfiguration,
+    sort: metadata.filterSort,
+    search: metadata.filterSearch,
+  });
+  return contacts;
 }
 
 export async function getContactsList(contactList: string) {
@@ -208,6 +278,7 @@ export function groupContactsByFamily(
         parents: [],
         children: [],
         updated: contact._posts.all[0]?.updated,
+        created: contact.created,
         deaconCareGroup: undefined,
       });
       if (contact.householdRole === "child") {
@@ -222,6 +293,9 @@ export function groupContactsByFamily(
       if ((contact._posts.all[0]?.updated ?? "") > (original.updated ?? "")) {
         original.updated = contact._posts.all[0].updated;
       }
+      if (contact.created < original.created) {
+        original.created = contact.created;
+      }
       return acc;
     },
     {} as Record<
@@ -232,6 +306,7 @@ export function groupContactsByFamily(
         parents: typeof contacts;
         children: typeof contacts;
         updated?: string;
+        created: string;
         deaconCareGroup?: string;
       }
     >
@@ -436,4 +511,30 @@ export async function createBulkEmailConnections({
         error instanceof Error ? error.message : "Failed to create connections",
     };
   }
+}
+
+export interface ContactQuery {
+  _id: string;
+  title: string;
+  _type: string;
+  realms: {
+    _id: string;
+    status: string;
+    title: string;
+    bgColor: string;
+    color: string;
+  }[];
+  filterConfiguration: Filter;
+  filterSearch: string;
+}
+
+export async function getContactQueries() {
+  const userRole = getUserRole();
+  if (userRole !== "Pastoral Staff") {
+    return [];
+  }
+
+  return authorizedApiFetch(`${API_URL}/query/contact/filters`, {
+    method: "GET",
+  }) as Promise<ContactQuery[]>;
 }
