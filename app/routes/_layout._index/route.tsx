@@ -31,12 +31,22 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   const { contactLists, contactQueries } = loaderData;
   const [lists, setLists] = useState(contactLists.optimistic);
   const [queries, setQueries] = useState(contactQueries.optimistic);
-  const { preferences, toggleFavorite, isPastoralStaff } = useUserPreferences();
+  const { preferences, toggleFavorite, isPastoralStaff, isDeacon } =
+    useUserPreferences();
 
   useEffect(() => {
     contactLists.fetched.then(setLists);
     contactQueries.fetched.then(setQueries);
   }, [contactLists.fetched, contactQueries.fetched]);
+
+  const filteredContactLists = useMemo(() => {
+    if (isDeacon) {
+      return lists?.filter((list) =>
+        list.title.startsWith("Deacon Care Group")
+      );
+    }
+    return lists;
+  }, [lists, isDeacon]);
 
   // Create favorites list by combining matching lists and queries
   const favoriteItems = useMemo(
@@ -80,7 +90,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
 
         <ListSection
           title="Contact Lists"
-          items={lists?.map((list) => ({
+          items={filteredContactLists?.map((list) => ({
             _id: list._id,
             title: list.title,
             url: `/lists/${list._id}`,
