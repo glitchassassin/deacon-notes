@@ -36,7 +36,9 @@ export default function Dashboard({ params, matches }: Route.ComponentProps) {
   } = loaderData;
 
   const [contacts, setContacts] = useState(optimistic);
-  const [sortBy, setSortBy] = useState<"familyName" | "updated">("familyName");
+  const [sortBy, setSortBy] = useState<"familyName" | "updated" | "created">(
+    "familyName"
+  );
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   useEffect(() => {
@@ -50,13 +52,15 @@ export default function Dashboard({ params, matches }: Route.ComponentProps) {
           return (
             multiplier * (a.familyName ?? "").localeCompare(b.familyName ?? "")
           );
+        } else if (sortBy === "created") {
+          return multiplier * (a.created ?? "").localeCompare(b.created ?? "");
         } else {
           return multiplier * (a.updated ?? "").localeCompare(b.updated ?? "");
         }
       })
     : null;
 
-  const toggleSort = (field: "familyName" | "updated") => {
+  const toggleSort = (field: "familyName" | "updated" | "created") => {
     if (sortBy === field) {
       setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
     } else {
@@ -84,6 +88,13 @@ export default function Dashboard({ params, matches }: Route.ComponentProps) {
             >
               Last Updated{" "}
               {sortBy === "updated" && (sortDirection === "asc" ? "↑" : "↓")}
+            </Button>
+            <Button
+              onClick={() => toggleSort("created")}
+              variant={sortBy === "created" ? "primary" : "secondary"}
+            >
+              Created{" "}
+              {sortBy === "created" && (sortDirection === "asc" ? "↑" : "↓")}
             </Button>
           </div>
           <div className="flex gap-2 w-full sm:w-auto order-1 sm:order-2 justify-end">
