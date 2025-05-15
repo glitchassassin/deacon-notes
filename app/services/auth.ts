@@ -4,6 +4,7 @@ const API_URL = "https://api.fluro.io";
 const LOCAL_STORAGE_USER_KEY = "fluroUser";
 const LOCAL_STORAGE_TOKEN_KEY = "fluroToken";
 const LOCAL_STORAGE_TOKEN_EXPIRATION_KEY = "fluroTokenExpiration";
+const LOCAL_STORAGE_USER_PREFERENCES = "fluroUserPreferences";
 const LOCAL_STORAGE_ROLE_KEY = "fluroUserRole";
 
 type LoginResponse = {
@@ -55,17 +56,17 @@ export async function login(username: string, password: string) {
 }
 
 export function logout() {
-  // Save user role data before clearing localStorage
-  const roleData = localStorage.getItem(LOCAL_STORAGE_ROLE_KEY);
-  
+  // Save user preferences data before clearing localStorage
+  const preferencesData = localStorage.getItem(LOCAL_STORAGE_USER_PREFERENCES);
+
   // Clear all localStorage items
   localStorage.clear();
-  
-  // Restore user role data if it was set
-  if (roleData) {
-    localStorage.setItem(LOCAL_STORAGE_ROLE_KEY, roleData);
+
+  // Restore user preferences data if it was set
+  if (preferencesData) {
+    localStorage.setItem(LOCAL_STORAGE_USER_PREFERENCES, preferencesData);
   }
-  
+
   return redirect("/login");
 }
 
@@ -126,44 +127,108 @@ export async function refreshToken() {
 
 export type UserRole = "Deacon" | "Pastoral Staff";
 
-interface UserRoleData {
+interface UserPreferences {
   userId: string;
-  role: UserRole;
+  role?: UserRole;
+  favorites: string[];
 }
 
-export function getUserRole(): UserRole | null {
+export function getUserPreferences(): UserPreferences | null {
   const user = getUser();
   if (!user) return null;
-  
-  const storedRoleData = localStorage.getItem(LOCAL_STORAGE_ROLE_KEY);
-  if (!storedRoleData) return null;
-  
+
+  const storedPreferences = localStorage.getItem(
+    LOCAL_STORAGE_USER_PREFERENCES
+  );
+  if (!storedPreferences) return null;
+
   try {
-    const roleData = JSON.parse(storedRoleData) as UserRoleData;
-    
-    // Only return the role if it belongs to the current user
-    if (roleData.userId === user._id) {
-      return roleData.role;
+    const preferences = JSON.parse(storedPreferences) as UserPreferences;
+
+    // Only return the preferences if they belong to the current user
+    if (preferences.userId === user._id) {
+      return preferences;
     }
-    
+
     return null;
   } catch (e) {
     // If there's an error parsing the JSON, clear the invalid data
-    localStorage.removeItem(LOCAL_STORAGE_ROLE_KEY);
+    localStorage.removeItem(LOCAL_STORAGE_USER_PREFERENCES);
     return null;
   }
+}
+
+export function getUserRole(): UserRole | null {
+  const preferences = getUserPreferences();
+  return preferences?.role ?? null;
 }
 
 export function setUserRole(role: UserRole): void {
   const user = getUser();
   if (!user) return;
-  
-  const roleData: UserRoleData = {
+
+  const currentPreferences = getUserPreferences() ?? {
     userId: user._id,
-    role
+    role,
+    favorites: [],
   };
-  
-  localStorage.setItem(LOCAL_STORAGE_ROLE_KEY, JSON.stringify(roleData));
+
+  const preferences: UserPreferences = {
+    ...currentPreferences,
+    role,
+  };
+
+  localStorage.setItem(
+    LOCAL_STORAGE_USER_PREFERENCES,
+    JSON.stringify(preferences)
+  );
+}
+
+export function getFavorites(): string[] {
+  const preferences = getUserPreferences();
+  return preferences?.favorites ?? [];
+}
+
+export function setFavorites(favorites: string[]): void {
+  const user = getUser();
+  if (!user) return;
+
+  const currentPreferences = getUserPreferences() ?? {
+    userId: user._id,
+    role: undefined,
+    favorites: [],
+  };
+
+  const preferences: UserPreferences = {
+    ...currentPreferences,
+    favorites,
+  };
+
+  localStorage.setItem(
+    LOCAL_STORAGE_USER_PREFERENCES,
+    JSON.stringify(preferences)
+  );
+}
+
+export function addFavorite(id: string): void {
+  const currentFavorites = getFavorites();
+  if (!currentFavorites.includes(id)) {
+    setFavorites([...currentFavorites, id]);
+  }
+}
+
+export function removeFavorite(id: string): void {
+  const currentFavorites = getFavorites();
+  setFavorites(currentFavorites.filter((favId) => favId !== id));
+}
+
+export function toggleFavorite(id: string): void {
+  const currentFavorites = getFavorites();
+  if (currentFavorites.includes(id)) {
+    removeFavorite(id);
+  } else {
+    addFavorite(id);
+  }
 }
 
 export function hasSelectedRole(): boolean {
