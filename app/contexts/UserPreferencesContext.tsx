@@ -17,6 +17,7 @@ interface UserPreferencesContextType {
   toggleFavorite: (id: string) => void;
   setRole: (role: UserRole) => void;
   isPastoralStaff: boolean;
+  isDeacon: boolean;
 }
 
 const UserPreferencesContext = createContext<UserPreferencesContextType | null>(
@@ -52,6 +53,11 @@ export function UserPreferencesProvider({ children }: { children: ReactNode }) {
     [preferences.role]
   );
 
+  const isDeacon = useMemo(
+    () => preferences.role === "Deacon",
+    [preferences.role]
+  );
+
   return (
     <UserPreferencesContext.Provider
       value={{
@@ -59,6 +65,7 @@ export function UserPreferencesProvider({ children }: { children: ReactNode }) {
         toggleFavorite,
         setRole,
         isPastoralStaff,
+        isDeacon,
       }}
     >
       {children}

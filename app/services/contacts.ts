@@ -2,8 +2,6 @@ import { API_URL, authorizedApiFetch } from "./api";
 import { getTokenSync, getUserRole } from "./auth";
 
 export async function getContactLists() {
-  const userRole = getUserRole();
-
   // Default filter configuration
   const requestBody = {
     sort: { sortKey: "title", sortDirection: "asc", sortType: "string" },
@@ -24,7 +22,6 @@ export async function getContactLists() {
         },
       ],
     },
-    search: userRole === "Deacon" ? "Deacon Care Group" : "", // Only filter for Deacons
     includeArchived: false,
     allDefinitions: false,
     searchInheritable: false,
