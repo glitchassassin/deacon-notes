@@ -140,6 +140,7 @@ export type Contact = {
   phoneNumbers: string[];
   emails: string[];
   updated: string;
+  created: string;
   _ss_householdID: string;
   householdRole?: string;
   family?: {
@@ -198,6 +199,7 @@ export async function filterContacts({
     "lastName",
     "preferredName",
     "updated",
+    "created",
     "phoneNumbers",
     "emails",
     "realms",
@@ -279,6 +281,7 @@ export function groupContactsByFamily(
         parents: [],
         children: [],
         updated: contact._posts.all[0]?.updated,
+        created: contact.created,
         deaconCareGroup: undefined,
       });
       if (contact.householdRole === "child") {
@@ -293,6 +296,9 @@ export function groupContactsByFamily(
       if ((contact._posts.all[0]?.updated ?? "") > (original.updated ?? "")) {
         original.updated = contact._posts.all[0].updated;
       }
+      if (contact.created < original.created) {
+        original.created = contact.created;
+      }
       return acc;
     },
     {} as Record<
@@ -303,6 +309,7 @@ export function groupContactsByFamily(
         parents: typeof contacts;
         children: typeof contacts;
         updated?: string;
+        created: string;
         deaconCareGroup?: string;
       }
     >
