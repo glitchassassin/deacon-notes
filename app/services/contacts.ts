@@ -486,9 +486,9 @@ export async function createBulkEmailConnections({
   );
 
   try {
-    // Get all contacts with emails
+    // Get all contacts with emails and filter to only include parents
     const contacts = (await getContactsList(contactListId)).filter(
-      (contact) => contact.emails.length > 0
+      (contact) => contact.emails.length > 0 && contact.householdRole === 'parent'
     );
 
     // Split contacts into 5 sets
