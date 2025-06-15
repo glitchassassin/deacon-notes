@@ -3,12 +3,14 @@ import { useEffect, useState } from "react";
 import { useFetcher } from "react-router";
 import CompactNote from "~/components/CompactNote";
 import ExternalLink from "~/icons/ExternalLink";
+import Note from "~/components/Note";
 import { optimisticCache } from "~/services/cache";
 import {
   createNote,
   getContact,
   getContactAvatarUrl,
   getNotes,
+  updateNote,
 } from "~/services/contacts";
 import type { Route } from "./+types/_layout.contacts.$contact";
 
@@ -37,20 +39,29 @@ export async function clientLoader({ params }: Route.LoaderArgs) {
 export async function clientAction({ request, params }: Route.ActionArgs) {
   const formData = await request.formData();
   const body = formData.get("body");
+  const noteId = formData.get("noteId");
+  const clientAction = formData.get("clientAction");
 
   try {
-    await createNote(params.contact, body as string);
+    if (clientAction === "create") {
+      await createNote(params.contact, body as string);
+    } else if (clientAction === "edit" && noteId) {
+      await updateNote(noteId as string, { body });
+    }
+
     return { success: true };
   } catch (error) {
     Sentry.captureException(error, {
       extra: {
         contactId: params.contact,
         noteLength: body?.toString().length,
+        noteId,
+        clientAction,
       },
     });
 
     return {
-      error: "Failed to create note. Please try again.",
+      error: "Failed to save note. Please try again.",
     };
   }
 }
@@ -65,6 +76,8 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   const [notes, setNotes] = useState(optimisticNotes);
   const [currentNote, setCurrentNote] = useState("");
   const [lastSubmittedNote, setLastSubmittedNote] = useState("");
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+  const [noteUpdates, setNoteUpdates] = useState<Record<string, string>>({});
 
   useEffect(() => {
     fetchedContact.then(setContact);
@@ -120,6 +133,61 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
     setCurrentNote("");
 
     fetcher.submit(event.currentTarget);
+  };
+
+  const handleUpdateNote = (noteId: string, newContent: string) => {
+    setNoteUpdates((prev) => ({
+      ...prev,
+      [noteId]: newContent,
+    }));
+  };
+
+  const NoteComponent = ({ note, onUpdateNote }: { note: any; onUpdateNote: (noteId: string, content: string) => void }) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [content, setContent] = useState(note.data?.body || "");
+
+    useEffect(() => {
+      setContent(note.data?.body || "");
+    }, [note.data?.body]);
+
+    const handleEdit = () => {
+      setIsEditing(true);
+    };
+
+    const handleCancel = () => {
+      setIsEditing(false);
+      setContent(note.data?.body || "");
+    };
+
+    const handleSave = () => {
+      setIsEditing(false);
+      onUpdateNote(note._id, content);
+
+      // Create a form data object to submit via fetcher
+      const formData = new FormData();
+      formData.append("body", content);
+      formData.append("noteId", note._id);
+      formData.append("clientAction", "edit");
+
+      fetcher.submit(formData, { method: "post" });
+    };
+
+    return (
+      <Note
+        data={note.data}
+        fullDefinition={note.fullDefinition}
+        created={note.created}
+        author={note.author}
+        isEditing={isEditing}
+        onFieldChange={(fieldKey, value) => {
+          if (fieldKey === "body") {
+            setContent(value);
+          }
+        }}
+        onSave={handleSave}
+        onCancel={handleCancel}
+      />
+    );
   };
 
   return (
@@ -259,6 +327,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
               {isLoading ? "Saving..." : "Save"}
             </button>
           </div>
+          <input type="hidden" name="clientAction" value="create" />
         </fetcher.Form>
         <div className="grid gap-2 bg-white dark:bg-gray-800 rounded-lg shadow-md print:shadow-none hover:shadow-md transition-shadow p-3">
           {!notes?.length && (
@@ -267,7 +336,11 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
             </div>
           )}
           {notes?.map((note) => (
-            <CompactNote key={note._id} note={note} />
+            <NoteComponent
+              key={note._id}
+              note={note}
+              onUpdateNote={handleUpdateNote}
+            />
           ))}
         </div>
       </main>

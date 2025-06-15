@@ -401,6 +401,13 @@ export async function createNote(contact: string, body: string) {
   });
 }
 
+export async function updateNote(noteId: string, data: Record<string, any>) {
+  return authorizedApiFetch(`${API_URL}/post/${noteId}`, {
+    method: "PUT",
+    body: JSON.stringify({ data }),
+  });
+}
+
 export function getContactAvatarUrl(contactId: string, width: number = 100) {
   return `${API_URL}/get/avatar/contact/${contactId}?w=${width}&cacheBuster=0&forceRefresh=true&access_token=${getTokenSync()}`;
 }
