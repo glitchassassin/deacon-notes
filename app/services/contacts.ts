@@ -130,6 +130,19 @@ interface ContactFilterOptions {
   timezone?: string;
 }
 
+type DetailItem = {
+  _id: string;
+  realms: string[];
+  data: Record<string, any>;
+};
+
+type DetailSection = {
+  data: Record<string, any>;
+  items: DetailItem[];
+  title: string;
+  labels: Record<string, string>;
+};
+
 export type Contact = {
   preferredName?: string;
   firstName: string;
@@ -140,6 +153,7 @@ export type Contact = {
   created: string;
   _ss_householdID: string;
   householdRole?: string;
+  details?: Record<string, DetailSection>;
   family?: {
     _id: string;
     title: string;

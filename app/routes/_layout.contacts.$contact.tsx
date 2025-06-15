@@ -208,6 +208,14 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
                     </div>
                   </div>
                 )}
+              {contact.details?.membership?.data["Member Date Joined"] && (
+                <div>
+                  Member Since:{" "}
+                  {new Date(
+                    contact.details.membership.data["Member Date Joined"]
+                  ).toLocaleDateString()}
+                </div>
+              )}
             </div>
           </div>
         )}
