@@ -34,7 +34,7 @@ export default function SendEmail() {
     return <div>Loading...</div>;
   }
 
-  const { title, _realm, emailAddresses } = loaderData;
+  const { title, emailContacts } = loaderData;
 
   const [showConnectionNote, setShowConnectionNote] = useState(false);
   const [message, setMessage] = useState("");
@@ -49,11 +49,11 @@ export default function SendEmail() {
   const user = getUser();
 
   useEffect(() => {
-    emailAddresses.then((emails) => {
-      setEmails(emails);
+    emailContacts.then((contacts) => {
+      setEmails(contacts.map((contact) => contact.emails[0]));
       setLoading(false);
     });
-  }, [emailAddresses]);
+  }, [emailContacts]);
 
   const handleCopyEmails = () => {
     navigator.clipboard.writeText(emails.join(", "));
@@ -68,8 +68,9 @@ export default function SendEmail() {
     setSending(true);
     setSendResult(null);
     try {
+      const contacts = await emailContacts;
       const result = await createBulkEmailConnections({
-        contactListId: _realm,
+        contacts,
         comments: message,
       });
       setSendResult({

@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/react";
 import { redirect } from "react-router";
 const API_URL = "https://api.fluro.io";
 const LOCAL_STORAGE_USER_KEY = "fluroUser";
@@ -108,9 +107,6 @@ export async function refreshToken() {
       },
     });
     if (!response.ok) {
-      Sentry.captureException(
-        new Error("Failed to refresh token: " + (await response.text()))
-      );
       throw logout();
     }
 

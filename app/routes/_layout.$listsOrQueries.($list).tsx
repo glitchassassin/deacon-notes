@@ -26,7 +26,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   let contacts: ReturnType<
     typeof optimisticCache<Awaited<ReturnType<typeof enrichWithNotes>>>
   >;
-  let emailAddresses;
+  let emailContacts;
   // Get contacts list with optimistic cache
   if (params.listsOrQueries === "lists") {
     metadata = await getContactsListMetadata(params.list);
@@ -36,13 +36,11 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
       () =>
         getContactsListPromise.then(groupContactsByFamily).then(enrichWithNotes)
     );
-    emailAddresses = getContactsListPromise.then((contacts) =>
-      contacts
-        .filter(
-          (contact) =>
-            contact.householdRole === "parent" && contact.emails.length > 0
-        )
-        .flatMap((contact) => contact.emails)
+    emailContacts = getContactsListPromise.then((contacts) =>
+      contacts.filter(
+        (contact) =>
+          contact.householdRole === "parent" && contact.emails.length > 0
+      )
     );
   } else {
     metadata = await getContactsQueryMetadata(params.list);
@@ -50,13 +48,11 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
     contacts = optimisticCache(`contacts-query-${params.list}`, () =>
       getContactsQueryPromise.then(groupContactsByFamily).then(enrichWithNotes)
     );
-    emailAddresses = getContactsQueryPromise.then((contacts) =>
-      contacts
-        .filter(
-          (contact) =>
-            contact.householdRole === "parent" && contact.emails.length > 0
-        )
-        .flatMap((contact) => contact.emails)
+    emailContacts = getContactsQueryPromise.then((contacts) =>
+      contacts.filter(
+        (contact) =>
+          contact.householdRole === "parent" && contact.emails.length > 0
+      )
     );
   }
 
@@ -67,7 +63,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
     title,
     _realm,
     contacts,
-    emailAddresses,
+    emailContacts,
   };
 }
 

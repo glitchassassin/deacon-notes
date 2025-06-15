@@ -431,7 +431,7 @@ export async function createConnection(
 }
 
 interface BulkEmailConnectionOptions {
-  contactListId: string;
+  contacts: Contact[];
   comments: string;
   when?: string;
 }
@@ -474,23 +474,11 @@ async function processContactSet(
 }
 
 export async function createBulkEmailConnections({
-  contactListId,
+  contacts,
   comments,
   when = new Date().toISOString(),
 }: BulkEmailConnectionOptions) {
-  console.log(
-    "Creating bulk email connections for",
-    contactListId,
-    "with comments",
-    comments
-  );
-
   try {
-    // Get all contacts with emails
-    const contacts = (await getContactsList(contactListId)).filter(
-      (contact) => contact.emails.length > 0
-    );
-
     // Split contacts into 5 sets
     const setSize = Math.ceil(contacts.length / 5);
     const contactSets = Array.from({ length: 5 }, (_, i) =>
