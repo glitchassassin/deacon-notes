@@ -36,7 +36,7 @@ export function UserMenu({ user = null }: UserMenuProps) {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white focus:outline-none"
+        className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white focus:outline-hidden"
       >
         <span className="sr-only">Open user menu</span>
         <div className="h-8 w-8 rounded-full bg-sky-500 flex items-center justify-center text-white">

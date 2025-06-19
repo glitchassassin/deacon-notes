@@ -47,7 +47,7 @@ export default function FaceSheetView({ matches }: Route.ComponentProps) {
 
   if (!sortedContacts) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow p-4 text-gray-900 dark:text-gray-100 print:text-black">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xs hover:shadow-md transition-shadow p-4 text-gray-900 dark:text-gray-100 print:text-black">
         Loading...
       </div>
     );
@@ -63,7 +63,7 @@ export default function FaceSheetView({ matches }: Route.ComponentProps) {
               className="text-gray-900 dark:text-gray-100 print:text-black break-inside-avoid-page"
             >
               <div className="flex flex-col">
-                <div className="flex-shrink-0 mb-4">
+                <div className="shrink-0 mb-4">
                   <img
                     src={getContactAvatarUrl(contact._id)}
                     alt={`${contact.preferredName ?? contact.firstName} ${

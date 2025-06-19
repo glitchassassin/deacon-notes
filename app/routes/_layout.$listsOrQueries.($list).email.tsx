@@ -87,7 +87,7 @@ export default function SendEmail() {
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
       <main className="max-w-2xl mx-auto">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
           <div className="flex justify-between mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -163,7 +163,7 @@ export default function SendEmail() {
                       id="message"
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
-                      className="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                      className="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
                       placeholder="Enter details about the email you sent..."
                       required
                     />

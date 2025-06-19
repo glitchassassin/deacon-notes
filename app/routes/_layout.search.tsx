@@ -93,19 +93,19 @@ function SearchResultsContent({
             {sortBy === "updated" && (sortDirection === "asc" ? "↑" : "↓")}
           </Button>
         </div>
-        <div className="flex-grow"></div>
+        <div className="grow"></div>
         <Button onClick={() => window.print()}>Print</Button>
       </div>
       {sortedContacts.length === 0 ? (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow p-4 text-gray-900 dark:text-gray-100">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xs hover:shadow-md transition-shadow p-4 text-gray-900 dark:text-gray-100">
           No results found for "{query}"
         </div>
       ) : (
         <div className="grid gap-4">
           <span className="hidden print:flex flex-row gap-2">
-            <span className="text-sm flex-[1]">Name</span>
-            <span className="text-sm flex-[2]">Phone</span>
-            <span className="text-sm flex-[2]">Email</span>
+            <span className="text-sm flex-1">Name</span>
+            <span className="text-sm flex-2">Phone</span>
+            <span className="text-sm flex-2">Email</span>
           </span>
           {sortedContacts.map((family) => (
             <Family key={family.familyId} family={family} showDeaconCareGroup />
@@ -130,7 +130,7 @@ export default function SearchResults({
         <Suspense
           key={query}
           fallback={
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow p-4 text-gray-900 dark:text-gray-100">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xs hover:shadow-md transition-shadow p-4 text-gray-900 dark:text-gray-100">
               Loading...
             </div>
           }

@@ -98,7 +98,7 @@ function Note({ data, fullDefinition, created, author }: NoteProps) {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xs hover:shadow-md transition-shadow p-6">
       <div className="mb-6">
         <h2 className="text-xl font-semibold">{fullDefinition.title}</h2>
         <div className="text-sm text-gray-500">

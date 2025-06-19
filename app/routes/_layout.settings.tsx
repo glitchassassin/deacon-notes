@@ -22,7 +22,7 @@ export default function Settings() {
     <div className="container mx-auto px-4 py-8 max-w-md">
       <h1 className="text-2xl font-bold mb-6">Settings</h1>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
         <h2 className="text-xl font-semibold mb-4">Select Your Role</h2>
         <p className="text-gray-600 dark:text-gray-300 mb-6">
           Please select your role to customize the app experience.
@@ -84,7 +84,7 @@ export default function Settings() {
           <div>
             <button
               type="submit"
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-xs text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               Save Settings
             </button>

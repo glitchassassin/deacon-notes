@@ -21,7 +21,7 @@ export function Button({
   className = "",
   ...props
 }: ButtonProps) {
-  const baseStyles = "px-3 py-1 rounded text-sm md:text-base transition-colors";
+  const baseStyles = "px-3 py-1 rounded-sm text-sm md:text-base transition-colors";
   const variantStyles =
     variant === "primary"
       ? "bg-blue-500 text-white hover:bg-blue-600 shadow-md dark:shadow-none"
@@ -44,7 +44,7 @@ export function LinkButton({
   to,
   ...props
 }: LinkButtonProps) {
-  const baseStyles = "px-3 py-1 rounded text-sm md:text-base transition-colors";
+  const baseStyles = "px-3 py-1 rounded-sm text-sm md:text-base transition-colors";
   const variantStyles =
     variant === "primary"
       ? "bg-blue-500 text-white hover:bg-blue-600 shadow-md dark:shadow-none"
