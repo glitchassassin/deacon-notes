@@ -1,7 +1,8 @@
+import clsx from "clsx";
 import { ButtonHTMLAttributes, ReactNode } from "react";
 import { Link } from "react-router";
 
-type ButtonVariant = "primary" | "secondary";
+type ButtonVariant = "primary" | "secondary" | "link";
 
 type BaseButtonProps = {
   children: ReactNode;
@@ -21,15 +22,20 @@ export function Button({
   className = "",
   ...props
 }: ButtonProps) {
-  const baseStyles = "px-3 py-1 rounded-sm text-sm md:text-base transition-colors";
-  const variantStyles =
-    variant === "primary"
-      ? "bg-blue-500 text-white hover:bg-blue-600 shadow-md dark:shadow-none"
-      : "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 shadow-md dark:shadow-none";
+  const baseStyles =
+    "transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50";
+
+  const variantStyles = {
+    primary:
+      "px-3 py-1 rounded-sm text-sm md:text-base bg-blue-500 text-white hover:bg-blue-600 shadow-md dark:shadow-none focus:ring-blue-500",
+    secondary:
+      "px-3 py-1 rounded-sm text-sm md:text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 shadow-md dark:shadow-none focus:ring-gray-500",
+    link: "text-sky-600 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 p-0",
+  };
 
   return (
     <button
-      className={`${baseStyles} ${variantStyles} ${className}`}
+      className={clsx(baseStyles, variantStyles[variant], className)}
       {...props}
     >
       {children}
@@ -44,7 +50,8 @@ export function LinkButton({
   to,
   ...props
 }: LinkButtonProps) {
-  const baseStyles = "px-3 py-1 rounded-sm text-sm md:text-base transition-colors";
+  const baseStyles =
+    "px-3 py-1 rounded-sm text-sm md:text-base transition-colors";
   const variantStyles =
     variant === "primary"
       ? "bg-blue-500 text-white hover:bg-blue-600 shadow-md dark:shadow-none"

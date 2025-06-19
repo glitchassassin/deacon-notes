@@ -385,6 +385,7 @@ export interface NoteResponse {
   created: string;
   author: {
     name: string;
+    _id?: string;
   };
   _id: string;
 }
@@ -399,6 +400,19 @@ export async function createNote(contact: string, body: string) {
     method: "POST",
     body: JSON.stringify({ data: { body } }),
   });
+}
+
+export async function editNote(noteId: string, body: string) {
+  return authorizedApiFetch(
+    `${API_URL}/content/note/${noteId}?replaceData=true`,
+    {
+      method: "PUT",
+      body: JSON.stringify({
+        _id: noteId,
+        data: { body },
+      }),
+    }
+  );
 }
 
 export function getContactAvatarUrl(contactId: string, width: number = 100) {
