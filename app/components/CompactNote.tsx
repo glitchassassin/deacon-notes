@@ -1,4 +1,5 @@
 import { NoteResponse } from "~/services/contacts";
+import NoteHeader from "./NoteHeader";
 
 function CompactNote({
   note: {
@@ -7,12 +8,10 @@ function CompactNote({
     created,
     author: { name: authorName },
   },
-  includeDate = true,
-  includeAuthor = true,
+  editButton,
 }: {
   note: NoteResponse;
-  includeDate?: boolean;
-  includeAuthor?: boolean;
+  editButton?: React.ReactNode;
 }) {
   const isConnection = fullDefinition.definitionName === "connection";
   const connectionTypeField = fullDefinition.fields.find(
@@ -29,25 +28,11 @@ function CompactNote({
     connectedField?.options?.find((option) => option.value === data?.connected)
       ?.name === "Yes";
 
-  const date = new Date(created).toLocaleDateString();
-
   return (
     <div>
-      <div className="flex flex-wrap items-center text-sm">
-        {/* Date */}
-        {includeDate && (
-          <div className="text-gray-500 dark:text-gray-400 whitespace-nowrap pr-1">
-            {date}
-          </div>
-        )}
-
-        {/* Author */}
-        {includeAuthor && (
-          <div className="text-gray-500 dark:text-gray-400 whitespace-nowrap pr-1">
-            {authorName}
-          </div>
-        )}
-      </div>
+      <NoteHeader created={created} authorName={authorName}>
+        {editButton}
+      </NoteHeader>
 
       <div className="flex flex-wrap items-center text-sm">
         {/* Connection-specific elements */}

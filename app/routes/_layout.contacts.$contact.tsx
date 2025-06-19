@@ -1,8 +1,9 @@
 import * as Sentry from "@sentry/browser";
 import { useEffect, useState } from "react";
 import { useFetcher } from "react-router";
-import CompactNote from "~/components/CompactNote";
+import NoteTextarea from "~/components/NoteTextarea";
 import ExternalLink from "~/icons/ExternalLink";
+import { EditableNote } from "~/routes/_layout.notes.$noteId.edit/route";
 import { optimisticCache } from "~/services/cache";
 import {
   createNote,
@@ -226,30 +227,20 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
           className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-md transition-shadow p-3 my-4 print:hidden"
         >
           <div className="flex flex-col gap-3">
-            <div>
-              <label
-                htmlFor="body"
-                className="block text-sm font-medium text-gray-800 dark:text-gray-300 mb-1"
-              >
-                New Note
-              </label>
-              <textarea
-                name="body"
-                id="body"
-                rows={3}
-                disabled={isLoading}
-                value={currentNote}
-                className="w-full rounded-md border border-gray-300 dark:border-white/20 bg-white dark:bg-gray-900 px-3 py-2 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50"
-                onChange={(event) => {
-                  setCurrentNote(event.target.value);
-                }}
-              />
-              {fetcher.data?.error && (
-                <div className="mt-1 text-red-600 text-sm">
-                  {fetcher.data.error}
-                </div>
-              )}
-            </div>
+            <NoteTextarea
+              name="body"
+              id="body"
+              value={currentNote}
+              onChange={setCurrentNote}
+              rows={3}
+              disabled={isLoading}
+              label="New Note"
+            />
+            {fetcher.data?.error && (
+              <div className="mt-1 text-red-600 text-sm">
+                {fetcher.data.error}
+              </div>
+            )}
 
             <button
               type="submit"
@@ -267,7 +258,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
             </div>
           )}
           {notes?.map((note) => (
-            <CompactNote key={note._id} note={note} />
+            <EditableNote key={note._id} note={note} />
           ))}
         </div>
       </main>
