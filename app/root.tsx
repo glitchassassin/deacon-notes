@@ -56,7 +56,7 @@ export function HydrateFallback() {
       <SiteHeader isLoading={true} />
 
       <div className="h-24 md:h-16 mt-4 print:hidden"></div>
-      <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow p-4 text-gray-900 dark:text-gray-100">
+      <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-xs hover:shadow-md transition-shadow p-4 text-gray-900 dark:text-gray-100">
         Loading...
       </div>
     </div>

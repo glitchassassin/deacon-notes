@@ -127,7 +127,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
       <main className="max-w-4xl mx-auto flex flex-col gap-1">
         {contact && (
           <div className="flex flex-wrap sm:flex-nowrap gap-6 mt-2">
-            <div className="w-full sm:w-auto flex-shrink-0 flex justify-center sm:justify-start">
+            <div className="w-full sm:w-auto shrink-0 flex justify-center sm:justify-start">
               <a
                 href={getContactAvatarUrl(contact._id, 600)}
                 target="_blank"

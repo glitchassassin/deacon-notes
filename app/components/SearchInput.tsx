@@ -24,14 +24,14 @@ export function SearchInput({
         disabled && "opacity-50 pointer-events-none"
       )}
     >
-      <div className="relative flex-grow">
+      <div className="relative grow">
         <input
           type="search"
           name="query"
           defaultValue={defaultValue}
           placeholder={placeholder}
           disabled={disabled}
-          className="w-full px-4 py-1.5 pr-10 rounded border border-gray-300 dark:border-white/20 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:focus:ring-sky-400"
+          className="w-full px-4 py-1.5 pr-10 rounded-sm border border-gray-300 dark:border-white/20 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-hidden focus:ring-2 focus:ring-sky-500 dark:focus:ring-sky-400"
         />
         <button
           type="submit"

@@ -32,7 +32,7 @@ export default function Login() {
       <h1 className="text-3xl font-bold mb-4">Deacon Notes</h1>
       <Form
         method="post"
-        className="bg-white dark:bg-gray-800 p-6 rounded shadow-md w-full max-w-sm"
+        className="bg-white dark:bg-gray-800 p-6 rounded-sm shadow-md w-full max-w-sm"
       >
         {actionData?.error && (
           <p className="text-red-500">{actionData.error}</p>
@@ -46,7 +46,7 @@ export default function Login() {
             name="username"
             required
             disabled={isSubmitting}
-            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-900 dark:text-white dark:border-white/20 disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full px-3 py-2 border rounded-sm focus:outline-hidden focus:ring-3 focus:border-blue-300 dark:bg-gray-900 dark:text-white dark:border-white/20 disabled:opacity-70 disabled:cursor-not-allowed"
           />
         </div>
         <div className="mb-4">
@@ -58,13 +58,13 @@ export default function Login() {
             name="password"
             required
             disabled={isSubmitting}
-            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-900 dark:text-white dark:border-white/20 disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full px-3 py-2 border rounded-sm focus:outline-hidden focus:ring-3 focus:border-blue-300 dark:bg-gray-900 dark:text-white dark:border-white/20 disabled:opacity-70 disabled:cursor-not-allowed"
           />
         </div>
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-sky-500 text-white py-2 rounded hover:bg-sky-600 transition disabled:opacity-70 disabled:cursor-not-allowed"
+          className="w-full bg-sky-500 text-white py-2 rounded-sm hover:bg-sky-600 transition disabled:opacity-70 disabled:cursor-not-allowed"
         >
           {isSubmitting ? "Logging in..." : "Login"}
         </button>

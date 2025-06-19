@@ -21,18 +21,18 @@ export function ListSection({
       <h2 className="text-2xl font-bold mt-8 mb-4">{title}</h2>
       <div className="grid gap-4">
         {!items ? (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow p-4 text-gray-900 dark:text-gray-100">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xs hover:shadow-md transition-shadow p-4 text-gray-900 dark:text-gray-100">
             Loading...
           </div>
         ) : items.length === 0 ? (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow p-4 text-gray-900 dark:text-gray-100">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xs hover:shadow-md transition-shadow p-4 text-gray-900 dark:text-gray-100">
             No items found
           </div>
         ) : (
           items.map((item) => (
             <div
               key={item._id}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow flex items-center"
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-xs hover:shadow-md transition-shadow flex items-center"
             >
               {onToggleFavorite && (
                 <button

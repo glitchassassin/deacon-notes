@@ -46,7 +46,7 @@ export default function SpreadsheetView({ matches }: Route.ComponentProps) {
 
   if (!sortedContacts) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow p-4 text-gray-900 dark:text-gray-100">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xs hover:shadow-md transition-shadow p-4 text-gray-900 dark:text-gray-100">
         Loading...
       </div>
     );

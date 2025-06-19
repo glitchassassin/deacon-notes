@@ -12,7 +12,7 @@ export function LogoutButton({ user }: LogoutButtonProps) {
         type="submit"
         disabled={!user}
         className={clsx(
-          "bg-red-700 text-white px-3 py-1 rounded hover:bg-red-800 transition",
+          "bg-red-700 text-white px-3 py-1 rounded-sm hover:bg-red-800 transition",
           !user && "opacity-0 pointer-events-none"
         )}
       >

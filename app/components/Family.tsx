@@ -29,13 +29,13 @@ function FamilyContact({ contact }: { contact: Family["parents"][number] }) {
           {contact.preferredName ?? contact.firstName}&nbsp;{contact.lastName}
         </Link>
         <span className="hidden print:flex flex-row gap-2 w-full">
-          <span className="text-sm flex-[1]">
+          <span className="text-sm flex-1">
             {contact.preferredName ?? contact.firstName}&nbsp;{contact.lastName}
           </span>
-          <span className="text-sm flex-[2]">
+          <span className="text-sm flex-2">
             {contact.phoneNumbers.map(formatPhoneNumber).join(", ")}
           </span>
-          <span className="text-sm flex-[2]">{contact.emails.join(", ")}</span>
+          <span className="text-sm flex-2">{contact.emails.join(", ")}</span>
         </span>
       </div>
       {contact.notes && contact.notes.length > 0 && (

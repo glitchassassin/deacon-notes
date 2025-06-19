@@ -32,7 +32,7 @@ export function SiteHeader({
               <UserMenu user={user} />
             </div>
           </div>
-          <div className="flex-grow">
+          <div className="grow">
             <SearchInput disabled={!user} />
           </div>
           <div className="hidden md:block">
