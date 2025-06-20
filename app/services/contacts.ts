@@ -379,8 +379,7 @@ export interface NoteDefinition {
   fields: NoteField[];
 }
 
-export interface NoteResponse {
-  data?: Record<string, any>;
+export interface NoteResponseBase {
   fullDefinition: NoteDefinition;
   created: string;
   author: {
@@ -389,6 +388,23 @@ export interface NoteResponse {
   };
   _id: string;
 }
+export interface SimpleNoteResponse extends NoteResponseBase {
+  data: {
+    body: string;
+  };
+  definition: "note";
+}
+export interface ConnectionNoteResponse extends NoteResponseBase {
+  data: {
+    comments: string;
+    connectionType: string;
+    connected: "yes" | "no";
+    when: string;
+  };
+  definition: "connection";
+}
+export type NoteResponse = SimpleNoteResponse | ConnectionNoteResponse;
+
 export async function getNotes(contact: string) {
   return authorizedApiFetch(`${API_URL}/info/posts?contact=${contact}`, {
     method: "GET",
