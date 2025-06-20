@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import { useFetcher } from "react-router";
-import { Button } from "~/components/Button";
-import CompactNote from "~/components/CompactNote";
-import EditNote from "~/routes/_layout.notes.$noteId.edit/EditNote";
+import { EditSimpleNote, ViewSimpleNote } from "~/components/notes/SimpleNote";
 import { getUser } from "~/services/auth";
-import type { NoteResponse } from "~/services/contacts";
+import type { SimpleNoteResponse } from "~/services/contacts";
 import { editNote } from "~/services/contacts";
 
 export async function clientAction({
@@ -34,7 +32,7 @@ export async function clientAction({
 }
 
 interface EditableNoteProps {
-  note: NoteResponse;
+  note: SimpleNoteResponse;
 }
 
 export function EditableNote({ note }: EditableNoteProps) {
@@ -79,26 +77,20 @@ export function EditableNote({ note }: EditableNoteProps) {
     >
       {isEditing ? (
         <>
-          <EditNote note={note} onCancel={handleCancel} isLoading={isLoading} />
+          <EditSimpleNote
+            note={note}
+            onCancel={handleCancel}
+            isLoading={isLoading}
+          />
           {fetcher.data?.error && (
             <div className="text-red-600 text-sm">{fetcher.data.error}</div>
           )}
         </>
       ) : (
         <div className="relative group">
-          <CompactNote
+          <ViewSimpleNote
             note={optimisticNote}
-            editButton={
-              canEdit ? (
-                <Button
-                  onClick={() => setIsEditing(true)}
-                  className="text-xs"
-                  variant="link"
-                >
-                  Edit
-                </Button>
-              ) : undefined
-            }
+            onEdit={canEdit ? () => setIsEditing(true) : undefined}
           />
         </div>
       )}

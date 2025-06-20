@@ -1,7 +1,8 @@
 import * as Sentry from "@sentry/browser";
 import { useEffect, useState } from "react";
 import { useFetcher } from "react-router";
-import NoteTextarea from "~/components/NoteTextarea";
+import { ViewConnection } from "~/components/notes/Connection";
+import { CreateSimpleNote } from "~/components/notes/SimpleNote";
 import ExternalLink from "~/icons/ExternalLink";
 import { EditableNote } from "~/routes/_layout.notes.$noteId.edit/route";
 import { optimisticCache } from "~/services/cache";
@@ -87,7 +88,10 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
         );
         setCurrentNote(lastSubmittedNote);
       } else if (
-        !notes?.some((note) => note.data?.body === lastSubmittedNote)
+        !notes?.some(
+          (note) =>
+            note.definition === "note" && note.data?.body === lastSubmittedNote
+        )
       ) {
         setCurrentNote(lastSubmittedNote);
       }
@@ -108,6 +112,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
         author: {
           name: "Saving...",
         },
+        definition: "note",
         fullDefinition: {
           definitionName: "note",
           fields: [],
@@ -226,30 +231,12 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
           onSubmit={handleSubmit}
           className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-md transition-shadow p-3 my-4 print:hidden"
         >
-          <div className="flex flex-col gap-3">
-            <NoteTextarea
-              name="body"
-              id="body"
-              value={currentNote}
-              onChange={setCurrentNote}
-              rows={3}
-              disabled={isLoading}
-              label="New Note"
-            />
-            {fetcher.data?.error && (
-              <div className="mt-1 text-red-600 text-sm">
-                {fetcher.data.error}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              className="bg-sky-600 hover:bg-sky-700 text-white font-medium py-2 px-4 rounded-md transition-colors disabled:opacity-50"
-              disabled={isLoading}
-            >
-              {isLoading ? "Saving..." : "Save"}
-            </button>
-          </div>
+          <CreateSimpleNote
+            value={currentNote}
+            onChange={setCurrentNote}
+            isLoading={isLoading}
+            error={fetcher.data?.error}
+          />
         </fetcher.Form>
         <div className="grid gap-2 bg-white dark:bg-gray-800 rounded-lg shadow-md print:shadow-none hover:shadow-md transition-shadow p-3">
           {!notes?.length && (
@@ -257,9 +244,13 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
               No notes found
             </div>
           )}
-          {notes?.map((note) => (
-            <EditableNote key={note._id} note={note} />
-          ))}
+          {notes?.map((note) =>
+            note.definition === "note" ? (
+              <EditableNote key={note._id} note={note} />
+            ) : (
+              <ViewConnection key={note._id} note={note} />
+            )
+          )}
         </div>
       </main>
     </div>
