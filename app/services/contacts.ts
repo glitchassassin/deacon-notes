@@ -431,8 +431,34 @@ export async function editNote(noteId: string, body: string) {
   );
 }
 
+export async function editConnectionNote(
+  noteId: string,
+  data: {
+    connectionType: string;
+    connected: "yes" | "no";
+    comments: string;
+  }
+) {
+  return authorizedApiFetch(
+    `${API_URL}/content/note/${noteId}?replaceData=true`,
+    {
+      method: "PUT",
+      body: JSON.stringify({
+        _id: noteId,
+        data,
+      }),
+    }
+  );
+}
+
 export async function deleteNote(noteId: string) {
   return authorizedApiFetch(`${API_URL}/content/note/${noteId}`, {
+    method: "DELETE",
+  });
+}
+
+export async function deleteConnection(noteId: string) {
+  return authorizedApiFetch(`${API_URL}/content/connection/${noteId}`, {
     method: "DELETE",
   });
 }

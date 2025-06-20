@@ -1,7 +1,6 @@
 import * as Sentry from "@sentry/browser";
 import { useEffect, useState } from "react";
 import { useFetcher } from "react-router";
-import { ViewConnection } from "~/components/notes/Connection";
 import { CreateSimpleNote } from "~/components/notes/SimpleNote";
 import ExternalLink from "~/icons/ExternalLink";
 import { EditableNote } from "~/routes/_layout.notes.$noteId.edit/route";
@@ -13,6 +12,7 @@ import {
   getNotes,
 } from "~/services/contacts";
 import type { Route } from "./+types/_layout.contacts.$contact";
+import { EditableConnection } from "./_layout.connections.$noteId.edit/route";
 
 export function meta({ data }: Route.MetaArgs) {
   const initialContact = data?.initialContact;
@@ -248,7 +248,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
             note.definition === "note" ? (
               <EditableNote key={note._id} note={note} />
             ) : (
-              <ViewConnection key={note._id} note={note} />
+              <EditableConnection key={note._id} note={note} />
             )
           )}
         </div>
