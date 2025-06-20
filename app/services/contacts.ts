@@ -431,6 +431,12 @@ export async function editNote(noteId: string, body: string) {
   );
 }
 
+export async function deleteNote(noteId: string) {
+  return authorizedApiFetch(`${API_URL}/content/note/${noteId}`, {
+    method: "DELETE",
+  });
+}
+
 export function getContactAvatarUrl(contactId: string, width: number = 100) {
   return `${API_URL}/get/avatar/contact/${contactId}?w=${width}&cacheBuster=0&forceRefresh=true&access_token=${getTokenSync()}`;
 }

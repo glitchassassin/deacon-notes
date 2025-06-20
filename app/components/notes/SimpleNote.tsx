@@ -11,18 +11,31 @@ export function ViewSimpleNote({
     author: { name: authorName },
   },
   onEdit,
+  onDelete,
 }: {
   note: SimpleNoteResponse;
   onEdit?: () => void;
+  onDelete?: () => void;
 }) {
   return (
     <div>
       <NoteHeader created={created} authorName={authorName}>
-        {onEdit && (
-          <Button onClick={onEdit} className="text-xs" variant="link">
-            Edit
-          </Button>
-        )}
+        <div className="flex gap-2">
+          {onEdit && (
+            <Button onClick={onEdit} className="text-xs" variant="link">
+              Edit
+            </Button>
+          )}
+          {onDelete && (
+            <Button
+              onClick={onDelete}
+              className="text-xs"
+              variant="link-danger"
+            >
+              Delete
+            </Button>
+          )}
+        </div>
       </NoteHeader>
 
       <div className="flex flex-wrap items-center text-sm">
@@ -54,11 +67,16 @@ export function EditSimpleNote({
         id="body"
         defaultValue={note.data?.body}
         rows={4}
-        label="Edit Note"
         disabled={isLoading}
       />
       <div className="flex gap-2">
-        <Button type="submit" variant="primary" disabled={isLoading}>
+        <Button
+          type="submit"
+          name="intent"
+          value="edit"
+          variant="primary"
+          disabled={isLoading}
+        >
           {isLoading ? "Saving..." : "Save"}
         </Button>
         <Button type="button" variant="secondary" onClick={onCancel}>
@@ -101,6 +119,46 @@ export function CreateSimpleNote({
       >
         {isLoading ? "Saving..." : "Save"}
       </button>
+    </div>
+  );
+}
+
+// Delete confirmation component for deleting notes
+export function DeleteSimpleNote({
+  note,
+  onCancel,
+  isLoading,
+}: {
+  note: SimpleNoteResponse;
+  onCancel: () => void;
+  isLoading: boolean;
+}) {
+  return (
+    <div className="-mx-3 border-t border-b border-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-800 p-3">
+      <ViewSimpleNote note={note} />
+
+      <div className="mt-4">
+        <div className="text-sm text-gray-700 dark:text-gray-300 mb-4">
+          <p className="font-medium text-red-800 dark:text-red-200">
+            Are you sure you want to delete this note?
+          </p>
+        </div>
+
+        <div className="flex gap-2">
+          <Button
+            type="submit"
+            name="intent"
+            value="delete"
+            variant="danger"
+            disabled={isLoading}
+          >
+            {isLoading ? "Deleting..." : "Delete Note"}
+          </Button>
+          <Button type="button" variant="secondary" onClick={onCancel}>
+            Cancel
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
