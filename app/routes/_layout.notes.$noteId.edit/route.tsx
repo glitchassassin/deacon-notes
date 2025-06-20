@@ -1,34 +1,44 @@
 import { useEffect, useState } from "react";
-import { useFetcher } from "react-router";
-import { EditSimpleNote, ViewSimpleNote } from "~/components/notes/SimpleNote";
+import { data, useFetcher } from "react-router";
+import { namedAction } from "remix-utils/named-action";
+import {
+  DeleteSimpleNote,
+  EditSimpleNote,
+  ViewSimpleNote,
+} from "~/components/notes/SimpleNote";
 import { getUser } from "~/services/auth";
 import type { SimpleNoteResponse } from "~/services/contacts";
-import { editNote } from "~/services/contacts";
+import { deleteNote, editNote } from "~/services/contacts";
+import { Route } from "../_layout.notes.$noteId.edit/+types/route";
 
 export async function clientAction({
   request,
   params,
-}: {
-  request: Request;
-  params: { noteId: string };
-}) {
+}: Route.ClientActionArgs) {
   const formData = await request.formData();
-  const body = formData.get("body") as string;
   const noteId = params.noteId;
 
-  if (!noteId) {
-    throw new Error("Note ID is required");
-  }
+  return namedAction(formData, {
+    async edit() {
+      const body = formData.get("body") as string;
+      if (!body) {
+        throw new Error("Note body is required");
+      }
 
-  if (!body) {
-    throw new Error("Note body is required");
-  }
+      await editNote(noteId, body);
 
-  await editNote(noteId, body);
+      return data({
+        success: true,
+      });
+    },
+    async delete() {
+      await deleteNote(noteId);
 
-  return {
-    success: true,
-  };
+      return data({
+        success: true,
+      });
+    },
+  });
 }
 
 interface EditableNoteProps {
@@ -41,7 +51,9 @@ export function EditableNote({ note }: EditableNoteProps) {
   const fetcher = useFetcher();
   const isLoading = fetcher.state !== "idle";
   const [isEditing, setIsEditing] = useState(false);
-  const [optimisticNote, setOptimisticNote] = useState(note);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [optimisticNote, setOptimisticNote] =
+    useState<SimpleNoteResponse | null>(note);
 
   useEffect(() => {
     setOptimisticNote(note);
@@ -49,25 +61,36 @@ export function EditableNote({ note }: EditableNoteProps) {
 
   useEffect(() => {
     if (fetcher.formData) {
-      setOptimisticNote({
-        ...note,
-        data: {
-          ...note.data,
-          body: fetcher.formData.get("body") as string,
-        },
-      });
+      const intent = fetcher.formData.get("intent");
+      if (intent === "edit") {
+        setOptimisticNote({
+          ...note,
+          data: {
+            ...note.data,
+            body: fetcher.formData.get("body") as string,
+          },
+        });
+      } else if (intent === "delete") {
+        setOptimisticNote(null);
+      }
     }
   }, [fetcher.formData, note]);
 
   useEffect(() => {
     if (fetcher.state === "idle" && fetcher.data?.success) {
       setIsEditing(false);
+      setIsDeleting(false);
     }
   }, [fetcher.state, fetcher.data?.success]);
 
   const handleCancel = () => {
     setIsEditing(false);
+    setIsDeleting(false);
   };
+
+  if (optimisticNote === null && !isDeleting) {
+    return null;
+  }
 
   return (
     <fetcher.Form
@@ -75,7 +98,13 @@ export function EditableNote({ note }: EditableNoteProps) {
       action={`/notes/${note._id}/edit`}
       className="space-y-3"
     >
-      {isEditing ? (
+      {isDeleting ? (
+        <DeleteSimpleNote
+          note={note}
+          onCancel={handleCancel}
+          isLoading={isLoading}
+        />
+      ) : isEditing ? (
         <>
           <EditSimpleNote
             note={note}
@@ -89,8 +118,9 @@ export function EditableNote({ note }: EditableNoteProps) {
       ) : (
         <div className="relative group">
           <ViewSimpleNote
-            note={optimisticNote}
+            note={optimisticNote!}
             onEdit={canEdit ? () => setIsEditing(true) : undefined}
+            onDelete={canEdit ? () => setIsDeleting(true) : undefined}
           />
         </div>
       )}

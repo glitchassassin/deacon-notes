@@ -2,7 +2,8 @@ import { Link } from "react-router";
 import type { Contact } from "~/services/contacts";
 import { groupContactsByFamily } from "~/services/contacts";
 import { formatPhoneNumber } from "~/utils/format";
-import ViewNote from "./ViewNote";
+import { ViewConnection } from "./notes/Connection";
+import { ViewSimpleNote } from "./notes/SimpleNote";
 
 function lastPostActivity(
   posts: {
@@ -40,9 +41,13 @@ function FamilyContact({ contact }: { contact: Family["parents"][number] }) {
       </div>
       {contact.notes && contact.notes.length > 0 && (
         <div className="flex flex-col gap-2 pl-8 print:hidden">
-          {contact.notes.map((note) => (
-            <ViewNote key={note._id} note={note} />
-          ))}
+          {contact.notes.map((note) =>
+            note.definition === "note" ? (
+              <ViewSimpleNote key={note._id} note={note} />
+            ) : (
+              <ViewConnection key={note._id} note={note} />
+            )
+          )}
         </div>
       )}
     </div>
