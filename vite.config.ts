@@ -11,7 +11,9 @@ export default defineConfig({
     sentryVitePlugin({
       org: "jon-winsley",
       project: "deacon-notes",
-      disable: !process.env.SENTRY_AUTH_TOKEN,
+      disable:
+        !process.env.SENTRY_AUTH_TOKEN ||
+        process.env.NODE_ENV === "development",
     }),
     tailwindcss(),
   ],
