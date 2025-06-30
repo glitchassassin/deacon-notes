@@ -1,5 +1,6 @@
 import { http, HttpResponse } from "msw";
 import {
+  getMockNotesForContact,
   mockContactDetail,
   mockContactListMetadata,
   mockContactLists,
@@ -104,7 +105,7 @@ export const handlers = [
     if (contact) {
       const contactExists = mockContacts.find((c) => c._id === contact);
       if (contactExists) {
-        return HttpResponse.json(mockNotes);
+        return HttpResponse.json(getMockNotesForContact(contact));
       }
     }
     return HttpResponse.json([]);
@@ -126,7 +127,9 @@ export const handlers = [
   // Edit Note
   http.put("https://api.fluro.io/content/note/:noteId", ({ params }) => {
     const { noteId } = params;
-    const note = mockNotes.find((n) => n._id === noteId);
+    // Flatten all notes to search across all contacts
+    const allNotes = Object.values(mockNotes).flat();
+    const note = allNotes.find((n) => n._id === noteId);
     if (note) {
       return HttpResponse.json({
         _id: noteId,
@@ -139,7 +142,9 @@ export const handlers = [
   // Delete Note
   http.delete("https://api.fluro.io/content/note/:noteId", ({ params }) => {
     const { noteId } = params;
-    const note = mockNotes.find((n) => n._id === noteId);
+    // Flatten all notes to search across all contacts
+    const allNotes = Object.values(mockNotes).flat();
+    const note = allNotes.find((n) => n._id === noteId);
     if (note) {
       return HttpResponse.json({ success: true });
     }
@@ -151,7 +156,9 @@ export const handlers = [
     "https://api.fluro.io/content/connection/:noteId",
     ({ params }) => {
       const { noteId } = params;
-      const note = mockNotes.find((n) => n._id === noteId);
+      // Flatten all notes to search across all contacts
+      const allNotes = Object.values(mockNotes).flat();
+      const note = allNotes.find((n) => n._id === noteId);
       if (note) {
         return HttpResponse.json({ success: true });
       }
@@ -183,15 +190,27 @@ export const handlers = [
   // Avatar URL (this would be handled by the browser, but we can mock the response)
   http.get(
     "https://api.fluro.io/get/avatar/contact/:contactId",
-    ({ params }) => {
+    async ({ params }) => {
       const { contactId } = params;
-      // Return a mock image response
-      return new HttpResponse(null, {
-        status: 200,
-        headers: {
-          "Content-Type": "image/jpeg",
-        },
-      });
+
+      try {
+        // Try to fetch the image from the local images directory
+        const response = await fetch(`/images/${contactId}.png`);
+
+        if (response.ok) {
+          const buffer = await response.arrayBuffer();
+          return HttpResponse.arrayBuffer(buffer, {
+            headers: {
+              "content-type": "image/png",
+            },
+          });
+        }
+      } catch (error) {
+        console.error(`Error fetching image for contact ${contactId}:`, error);
+      }
+
+      // Return 404 if image doesn't exist
+      return HttpResponse.json({ error: "Avatar not found" }, { status: 404 });
     }
   ),
 ];

@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link, useParams, useRouteLoaderData } from "react-router";
+import { Link, useParams } from "react-router";
 import { getUser } from "~/services/auth";
 import { createBulkEmailConnections } from "~/services/contacts";
 import { matchById } from "~/utils/matchById";
-import { type Info as ParentInfo } from "./+types/_layout.$listsOrQueries.($list)";
 import { Route } from "./+types/_layout.$listsOrQueries.($list).email";
 
 // Define the parent route ID for useRouteLoaderData
@@ -25,10 +24,9 @@ export function meta({ matches }: Partial<Route.MetaArgs>) {
   ];
 }
 
-export default function SendEmail() {
+export default function SendEmail({ matches }: Route.ComponentProps) {
   const params = useParams();
-  const loaderData =
-    useRouteLoaderData<ParentInfo["loaderData"]>(PARENT_ROUTE_ID);
+  const loaderData = matchById(matches, PARENT_ROUTE_ID).data;
 
   if (!loaderData) {
     return <div>Loading...</div>;

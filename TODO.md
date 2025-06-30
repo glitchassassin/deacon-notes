@@ -1,4 +1,4 @@
-- [ ] Fix mock data on profile page
-- [ ] Use types for mocks in data.ts to ensure correct format
-- [ ] Enhance hardcoded data for demo (multiple families, some with kids, progressively older notes)
+- [x] Use types for mocks in data.ts to ensure correct format
+- [x] Fix mock data on profile page
+- [x] Enhance hardcoded data for demo (multiple families, some with kids, progressively older notes)
 - [ ] Add mocks of generated images for families

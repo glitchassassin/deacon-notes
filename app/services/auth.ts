@@ -6,7 +6,7 @@ const LOCAL_STORAGE_TOKEN_EXPIRATION_KEY = "fluroTokenExpiration";
 const LOCAL_STORAGE_USER_PREFERENCES = "fluroUserPreferences";
 const LOCAL_STORAGE_ROLE_KEY = "fluroUserRole";
 
-type LoginResponse = {
+export type LoginResponse = {
   _id: string;
   name: string;
   email: string;
