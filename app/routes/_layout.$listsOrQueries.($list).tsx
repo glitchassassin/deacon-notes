@@ -39,7 +39,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
     emailContacts = getContactsListPromise.then((contacts) =>
       contacts.filter(
         (contact) =>
-          contact.householdRole === "parent" && contact.emails.length > 0
+          contact.householdRole !== "child" && contact.emails.length > 0
       )
     );
   } else {
@@ -51,7 +51,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
     emailContacts = getContactsQueryPromise.then((contacts) =>
       contacts.filter(
         (contact) =>
-          contact.householdRole === "parent" && contact.emails.length > 0
+          contact.householdRole !== "child" && contact.emails.length > 0
       )
     );
   }
