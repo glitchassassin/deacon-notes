@@ -291,7 +291,10 @@ export function groupContactsByFamily(
         familyName: contact.family?.title ?? contact.lastName,
         parents: [],
         children: [],
-        updated: contact._posts.all[0]?.updated,
+        updated: contact._posts.all.reduce(
+          (latest, post) => (post.updated > latest ? post.updated : latest),
+          ""
+        ),
         created: contact.created,
         deaconCareGroup: undefined,
       });
