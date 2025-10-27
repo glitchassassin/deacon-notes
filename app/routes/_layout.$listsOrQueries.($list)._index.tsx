@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router";
 import { Button, LinkButton } from "~/components/Button";
 import { Family } from "~/components/Family";
 import { matchById } from "~/utils/matchById";
@@ -25,6 +26,8 @@ export function meta({ matches }: Partial<Route.MetaArgs>) {
 
 export default function Dashboard({ params, matches }: Route.ComponentProps) {
   const loaderData = matchById(matches, PARENT_ROUTE_ID).data;
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   if (!loaderData) {
     return <div>Loading...</div>;
@@ -36,10 +39,16 @@ export default function Dashboard({ params, matches }: Route.ComponentProps) {
   } = loaderData;
 
   const [contacts, setContacts] = useState(optimistic);
-  const [sortBy, setSortBy] = useState<"familyName" | "updated" | "created">(
-    "familyName"
-  );
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
+  // Read sort parameters from URL, with defaults
+  const sortBy =
+    (searchParams.get("sortBy") as
+      | "familyName"
+      | "updated"
+      | "created"
+      | null) ?? "familyName";
+  const sortDirection =
+    (searchParams.get("sortDirection") as "asc" | "desc" | null) ?? "asc";
 
   useEffect(() => {
     fetched.then(setContacts);
@@ -61,12 +70,19 @@ export default function Dashboard({ params, matches }: Route.ComponentProps) {
     : null;
 
   const toggleSort = (field: "familyName" | "updated" | "created") => {
+    const newSearchParams = new URLSearchParams(searchParams);
+
     if (sortBy === field) {
-      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+      // Toggle direction if clicking the same field
+      const newDirection = sortDirection === "asc" ? "desc" : "asc";
+      newSearchParams.set("sortDirection", newDirection);
     } else {
-      setSortBy(field);
-      setSortDirection("asc");
+      // Switch to new field with ascending direction
+      newSearchParams.set("sortBy", field);
+      newSearchParams.set("sortDirection", "asc");
     }
+
+    navigate(`?${newSearchParams.toString()}`, { replace: true });
   };
 
   return (
