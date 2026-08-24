@@ -30,6 +30,21 @@ export default function Login() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
       <h1 className="text-3xl font-bold mb-4">Deacon Notes</h1>
+      <aside
+        role="note"
+        aria-label="Deacon Notes migration notice"
+        className="w-full max-w-sm mb-4 rounded-sm border border-amber-300 bg-amber-50 p-4 text-sm text-amber-950 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-100"
+      >
+        We&apos;ve moved to{" "}
+        <a
+          href="https://everysheep.com/"
+          className="font-semibold underline underline-offset-2"
+        >
+          Everysheep
+        </a>
+        ! Reach out to Jon Winsley for an invitation. Deacon Notes will no
+        longer be accessible after August 31st, 2026.
+      </aside>
       <Form
         method="post"
         className="bg-white dark:bg-gray-800 p-6 rounded-sm shadow-md w-full max-w-sm"
